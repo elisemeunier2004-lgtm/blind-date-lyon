@@ -31,6 +31,14 @@ npm run preview   # prévisualiser le build
 npm run check     # vérification des types
 ```
 
+## MCP 21st.dev (Claude Code)
+
+Le fichier `.mcp.json` déclare le serveur MCP officiel de 21st.dev (`https://21st.dev/api/mcp`). La clé n'est jamais écrite dans le repo : elle est lue dans la variable d'environnement `API_KEY_21ST`.
+
+1. Créer une clé gratuite sur https://21st.dev/mcp (les anciennes clés « Magic » ne fonctionnent plus).
+2. Dans le terminal, avant de lancer Claude Code : `export API_KEY_21ST="votre-clé"`
+3. Lancer `claude` dans le dossier du projet, puis approuver le serveur « 21st » lorsque c'est demandé. Vérifier avec `claude mcp list`.
+
 ## Modifier les informations commerciales
 
 **Tout se trouve dans un seul fichier : `src/config/site.ts`.**
