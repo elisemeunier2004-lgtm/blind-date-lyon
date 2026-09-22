@@ -1,5 +1,7 @@
 # Trois concepts de homepage — analyse comparative
 
+> **Mise à jour :** La Sala (concept B) devient l'expérience concrète de la question fondatrice. Voir `FONDATION-PHILOSOPHIQUE.md`, §7 et §8. L'analyse ci-dessous est conservée telle quelle, pour mémoire.
+
 > **Source de vérité :** `VISUAL-WORLD-BIBLE-V2.md`. Ce document la développe, il ne la remplace pas.
 > Nom de travail : LA CITA (le nom reste ouvert).
 > Aucun code, aucun logo, aucune homepage construite.

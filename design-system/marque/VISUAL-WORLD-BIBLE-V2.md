@@ -4,6 +4,8 @@
 > La direction « Le Voile — clair-obscur lyonnais » est **archivée et ne doit pas être reprise**.
 > Nom de travail : **LA CITA**. Le nom reste ouvert (voir l'Annexe « Naming »).
 > Ce document ne contient ni code, ni logo, ni homepage construite.
+> **Fondation narrative et éditoriale :** `FONDATION-PHILOSOPHIQUE.md` (question fondatrice, langage, règle de clarté, test de la place vide). En cas de doute sur le langage ou sur une décision d'expérience, c'est elle qui prime.
+> **Homepage :** La Sala devient l'expérience concrète de la question fondatrice (voir la fondation, §7). La recommandation du §20 ci-dessous date d'avant cette décision.
 
 ---
 
