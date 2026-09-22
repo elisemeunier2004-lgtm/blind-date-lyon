@@ -7,10 +7,24 @@ Site de la marque (nom de travail : **LA CITA**). Première destination : Lyon.
 > 2. `design-system/marque/VISUAL-WORLD-BIBLE-V2.md` : direction artistique
 > 3. `design-system/marque/CONCEPTS-HOMEPAGE.md` : historique des concepts (LA SALA est retenu)
 
-## Lancer le projet
+## Voir le site en local
+
+**Prérequis : Node.js 22.12 ou plus récent** (vérifier avec `node -v` ; sinon l'installer depuis https://nodejs.org, version LTS, ou `nvm use` grâce au fichier `.nvmrc`).
 
 ```bash
+git clone https://github.com/elisemeunier2004-lgtm/blind-date-lyon.git
+cd blind-date-lyon
+git checkout claude/upbeat-maxwell-di9jpq
 npm install
+npm start         # ouvre http://localhost:4321/ dans le navigateur
+```
+
+Arrêter le serveur : `Ctrl + C` dans le terminal.
+
+## Commandes
+
+```bash
+npm start         # développement + ouverture automatique du navigateur
 npm run dev       # développement : http://localhost:4321
 npm run build     # site statique dans dist/
 npm run preview   # prévisualiser le build
