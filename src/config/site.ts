@@ -1,13 +1,15 @@
 /**
  * Informations commerciales et éditoriales du site.
  *
- * C'est le SEUL endroit à modifier pour changer un prix, une date, une séance,
- * une condition ou le lien de réservation. Aucune de ces valeurs n'est écrite
- * en dur dans les composants.
+ * C'est le SEUL endroit à modifier pour annoncer l'ouverture, un prix, une date,
+ * une séance, une condition ou un lien. Aucune de ces valeurs n'est écrite en dur
+ * dans les composants.
  *
- * ⚠️ Les valeurs actuelles sont des PLACEHOLDERS (prix, dates, conditions,
- * adresse de contact). Tant que `placeholders` vaut `true`, le site affiche
- * une mention « indicatif » à côté du prix et des dates.
+ * ÉTAT ACTUEL : rien n'est encore confirmé. LA SALA n'est pas lancée.
+ * Toutes les valeurs commerciales sont donc à `null` ou vides :
+ * le site annonce simplement que LA SALA arrive bientôt à Lyon.
+ * Dès qu'une information est officielle, la renseigner ici : les composants
+ * l'afficheront automatiquement (séances, prix, conditions, réservation…).
  */
 
 export type Seance = {
@@ -38,12 +40,51 @@ export type Episode = {
   videoUrl: string | null;
 };
 
-export const site = {
+type Site = {
   /** Nom de travail : le nom définitif n'est pas encore choisi. */
-  marque: 'LA CITA',
+  marque: string;
+  destination: { ville: string; mention: string; prochaines: string };
+  ouverture: {
+    /** 'bientot' tant qu'aucune séance n'est ouverte à la réservation. */
+    statut: 'bientot' | 'ouverte';
+    annonce: string;
+    /**
+     * Lien vers le formulaire « Être informé de l'ouverture » (liste d'attente, newsletter…).
+     * `null` = pas encore de dispositif : le site le dit honnêtement.
+     */
+    lienInformation: string | null;
+  };
+  offre: {
+    /** La phrase de clarté : ce qu'est l'expérience, en une ligne. */
+    enUneLigne: string;
+    /** Prix par personne. `null` = non communiqué (rien n'est affiché). */
+    prixParDefaut: number | null;
+    devise: string;
+    /** Ce que le prix inclut (ex. « dîner et boissons compris »). `null` = non communiqué. */
+    prixComprend: string | null;
+    /** Ce que sera une soirée : le concept, sans chiffre ni lieu. */
+    comprend: string[];
+    /** Âge minimum légal pour participer. */
+    ageMinimum: number;
+    /** Conditions d'annulation. `null` = publiées avec l'ouverture des réservations. */
+    annulation: string | null;
+  };
+  reservation: {
+    /** Lien vers la billetterie. `null` = pas de réservation possible (aucun bouton « Réserver »). */
+    url: string | null;
+  };
+  contact: {
+    /** Adresse de contact officielle. `null` = aucune adresse affichée. */
+    email: string | null;
+  };
+  /** Séances ouvertes ou annoncées. Vide tant qu'aucune date n'est officielle. */
+  seances: Seance[];
+  securite: string[];
+  episodes: Episode[];
+};
 
-  /** true = les chiffres affichés sont indicatifs (mention visible sur le site). */
-  placeholders: true,
+export const site: Site = {
+  marque: 'LA CITA',
 
   destination: {
     ville: 'Lyon',
@@ -51,76 +92,42 @@ export const site = {
     prochaines: 'Prochaines destinations : à annoncer',
   },
 
+  ouverture: {
+    statut: 'bientot',
+    annonce: 'LA SALA arrive bientôt à Lyon.',
+    lienInformation: null,
+  },
+
   offre: {
-    /** La phrase de clarté : ce qu'est l'expérience, en une ligne. */
     enUneLigne: "Une soirée pour rencontrer quelqu'un que vous n'avez jamais vu.",
-    prixParDefaut: 85,
+    prixParDefaut: null,
     devise: 'EUR',
-    prixComprend: 'dîner et boissons compris',
+    prixComprend: null,
     comprend: [
-      'Une place à table, pour une soirée, avec une personne que vous ne connaissez pas encore.',
-      'Un dîner et ses boissons, dans un lieu partenaire.',
+      'Une place à table, pour une soirée, face à une personne que vous ne connaissez pas encore.',
+      'Un dîner, dans un lieu public.',
       'Quelques indices sur la personne, dans les jours qui précèdent.',
       "L'adresse exacte, confiée la veille.",
       'Le lendemain, une question privée : « Se revoir ? »',
     ],
     ageMinimum: 18,
-    annulation: "Annulation gratuite jusqu'à 72 h avant la séance. Au-delà, la place n'est pas remboursée, mais elle peut être reportée une fois.",
+    annulation: null,
   },
 
   reservation: {
-    /**
-     * Lien vers la billetterie quand elle existera.
-     * Tant qu'il est vide, les boutons « Réserver » ouvrent un e-mail pré-rempli.
-     */
-    url: '',
+    url: null,
   },
 
   contact: {
-    /** Adresse provisoire (domaine .example réservé aux exemples). À remplacer. */
-    email: 'bonjour@lacita.example',
+    email: null,
   },
 
-  seances: [
-    {
-      numero: '017',
-      date: '2026-10-15T21:00:00+02:00',
-      format: 'La Cena',
-      formatDescription: 'Dîner à deux',
-      quartier: 'Lyon 2e',
-      public: '28 – 38 ans · toutes orientations',
-      placesRestantes: null,
-      statut: 'ouverte',
-    },
-    {
-      numero: '018',
-      date: '2026-10-22T21:00:00+02:00',
-      format: 'La Cena',
-      formatDescription: 'Dîner à deux',
-      quartier: 'Lyon 1er',
-      public: '35 – 48 ans · toutes orientations',
-      placesRestantes: null,
-      statut: 'ouverte',
-    },
-    {
-      numero: '019',
-      date: '2026-10-29T20:30:00+01:00',
-      format: 'La Tertulia',
-      formatDescription: 'Grande soirée de conversation entre inconnus',
-      quartier: 'Lyon 7e',
-      public: '25 – 45 ans · toutes orientations',
-      prix: 65,
-      placesRestantes: null,
-      statut: 'bientot',
-    },
-  ] satisfies Seance[],
+  seances: [],
 
   securite: [
-    'Toujours un lieu public : un restaurant ou un lieu partenaire.',
-    "Identité vérifiée pour chaque participant·e avant la séance.",
+    'Toujours un lieu public.',
     'Une charte de respect acceptée par tout le monde.',
-    "Vous pouvez partir à tout moment, sans avoir à vous justifier.",
-    'Notre équipe reste joignable pendant toute la soirée.',
+    'Vous pouvez partir à tout moment, sans avoir à vous justifier.',
     'Vos coordonnées ne sont jamais transmises sans votre accord mutuel.',
   ],
 
@@ -128,7 +135,7 @@ export const site = {
     {
       numero: 1,
       titre: 'La Víspera',
-      description: 'La veille d’une séance. Deux inconnus, la même nuit, aucun visage.',
+      description: 'La veille d’une soirée. Deux inconnus, la même nuit, aucun visage.',
       videoUrl: null,
     },
     {
@@ -143,5 +150,5 @@ export const site = {
       description: 'Ce qui reste d’une soirée : des voix, des objets, une table vide.',
       videoUrl: null,
     },
-  ] satisfies Episode[],
-} as const;
+  ],
+};

@@ -1,8 +1,6 @@
 ---
 import { site } from '../config/site';
-import { lienReservation, prochaineSeance } from '../lib/format';
-
-const seance = prochaineSeance();
+import { lienInformation } from '../lib/format';
 ---
 
 <section
@@ -25,8 +23,7 @@ const seance = prochaineSeance();
       Une place vous est réservée.<br /><em>Celle d’à côté aussi.</em>
     </h2>
     <div class="fin__actions">
-      <a class="bouton" href="#seances">Voir les séances</a>
-      <a class="lien-trace" href={lienReservation(seance)}>Réserver directement</a>
+      <a class="bouton" href={lienInformation()}>Être informé de l’ouverture</a>
     </div>
     <p class="fin__mot affiche" aria-hidden="true">Fin.</p>
   </div>
@@ -43,11 +40,11 @@ const seance = prochaineSeance();
     </div>
     <nav aria-label="Pied de page">
       <ul>
-        <li><a href="#seances">Les séances</a></li>
+        <li><a href="#ouverture">L’ouverture</a></li>
         <li><a href="#engagement">L’engagement</a></li>
         <li><a href="#questions">Questions</a></li>
         <li><a href="#cartas"><span lang="es">Cartas</span> · épisodes</a></li>
-        <li><a href={`mailto:${site.contact.email}`}>Nous écrire</a></li>
+        {site.contact.email && <li><a href={`mailto:${site.contact.email}`}>Nous écrire</a></li>}
       </ul>
     </nav>
   </div>

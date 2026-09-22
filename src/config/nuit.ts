@@ -73,7 +73,7 @@ export const chapitres: Chapitre[] = [
     titre: 'La nuit',
     phrase: 'Avant son visage, il y a sa voix.',
     concretement:
-      'Vous restez le temps que vous voulez. Vous pouvez partir à tout moment, et notre équipe reste joignable toute la soirée.',
+      'Vous restez le temps que vous voulez. Vous pouvez partir à tout moment, sans avoir à vous justifier.',
     tonalite: 'chaude',
     voisin: { regard: false, strapontin: 'abaisse', cle: true, rose: false },
   },

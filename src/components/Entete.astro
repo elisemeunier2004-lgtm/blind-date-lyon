@@ -1,6 +1,6 @@
 ---
 import { site } from '../config/site';
-import { prix, prixMinimum } from '../lib/format';
+import { lienInformation } from '../lib/format';
 ---
 
 <header class="entete">
@@ -11,8 +11,8 @@ import { prix, prixMinimum } from '../lib/format';
   <p class="entete__heure affiche" aria-hidden="true" data-heure-courante>20:47</p>
 
   <nav class="entete__nav" aria-label="Accès rapide">
-    <a class="entete__seances generique" href="#seances">
-      Les séances <span class="entete__prix">· dès {prix(prixMinimum())}</span>
+    <a class="entete__seances generique" href={lienInformation()}>
+      Être informé de l’ouverture
     </a>
     <button class="entete__carte generique" type="button" data-ouvrir-carte aria-haspopup="dialog">
       Carte de bal
@@ -82,9 +82,6 @@ import { prix, prixMinimum } from '../lib/format';
   }
   .entete__seances:hover,
   .entete__carte:hover {
-    color: var(--champan);
-  }
-  .entete__prix {
     color: var(--champan);
   }
 

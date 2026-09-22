@@ -13,11 +13,10 @@ import Cartas from '../components/Cartas.astro';
 import Fin from '../components/Fin.astro';
 import { site } from '../config/site';
 import { chapitres } from '../config/nuit';
-import { heure, jourLong, prix, prixSeance, prochaineSeance } from '../lib/format';
+import { lienInformation } from '../lib/format';
 
-const seance = prochaineSeance()!;
 const titre = `${site.marque} · Une place vous est réservée · ${site.destination.ville}`;
-const description = `${site.offre.enUneLigne} Pas de photo, pas de profil : vous réservez une place, pas une personne. Séances à ${site.destination.ville}, dès ${prix(prixSeance(seance))}.`;
+const description = `${site.offre.enUneLigne} Pas de photo, pas de profil : vous réservez une place, pas une personne. ${site.ouverture.annonce}`;
 ---
 
 <Base titre={titre} description={description}>
@@ -47,14 +46,12 @@ const description = `${site.offre.enUneLigne} Pas de photo, pas de profil : vous
         </p>
 
         <p class="entree__faits generique">
-          Prochaine séance · {jourLong(seance.date)} · {heure(seance.date)} · {seance.quartier} ·
-          {prix(prixSeance(seance))}
-          {site.placeholders && <span class="entree__indicatif"> (indicatif)</span>}
+          {site.ouverture.annonce}
         </p>
 
         <div class="entree__billet">
-          <Billet seance={seance} />
-          <a class="lien-trace entree__passer" href="#seances">Passer · voir les séances</a>
+          <Billet />
+          <a class="lien-trace entree__passer" href={lienInformation()}>Être informé de l’ouverture</a>
         </div>
         <p class="entree__retour generique" data-retour hidden>Bon retour. La séance continue.</p>
       </div>
@@ -150,9 +147,6 @@ const description = `${site.offre.enUneLigne} Pas de photo, pas de profil : vous
   .entree__faits {
     color: var(--marfil);
     line-height: 1.8;
-  }
-  .entree__indicatif {
-    color: var(--humo);
   }
   .entree__billet {
     display: grid;

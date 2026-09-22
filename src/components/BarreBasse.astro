@@ -1,13 +1,13 @@
 ---
-import { prix, prixMinimum } from '../lib/format';
+import { lienInformation } from '../lib/format';
 ---
 
 <nav class="barre" aria-label="Navigation mobile">
   <button class="barre__item generique" type="button" data-ouvrir-carte aria-haspopup="dialog">
     Carte de bal
   </button>
-  <a class="barre__item barre__item--action generique" href="#seances">
-    Séances · dès {prix(prixMinimum())}
+  <a class="barre__item barre__item--action generique" href={lienInformation()}>
+    Être informé
   </a>
 </nav>
 

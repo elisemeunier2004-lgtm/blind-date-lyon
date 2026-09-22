@@ -43,22 +43,21 @@ Le fichier `.mcp.json` déclare le serveur MCP officiel de 21st.dev (`https://21
 
 **Tout se trouve dans un seul fichier : `src/config/site.ts`.**
 
-| Pour changer… | Modifier… |
+**État actuel : rien n'est confirmé.** LA SALA n'est pas lancée : aucune date, aucun lieu, aucun prix, aucune billetterie. Toutes les valeurs commerciales sont à `null` ou vides, et le site annonce simplement « LA SALA arrive bientôt à Lyon. ». Chaque information réapparaît automatiquement dès qu'elle est renseignée.
+
+| Pour… | Modifier… |
 |---|---|
-| Le prix par défaut | `offre.prixParDefaut` |
-| Le prix d'une séance en particulier | `prix` dans la séance |
-| Les séances (dates, format, quartier, public) | `seances` |
-| Le statut d'une séance | `statut` : `'ouverte'`, `'complete'` ou `'bientot'` |
+| Brancher le bouton « Être informé de l'ouverture » (liste d'attente, newsletter) | `ouverture.lienInformation` (tant qu'il vaut `null`, le bouton mène à la section « L'ouverture », qui l'indique honnêtement) |
+| Annoncer l'ouverture | `ouverture.statut` : `'ouverte'` (avec au moins une séance) |
+| Ajouter des soirées (dates, format, quartier, public) | `seances` (vide pour l'instant) |
+| Le prix par défaut / ce qu'il inclut | `offre.prixParDefaut`, `offre.prixComprend` (`null` = rien n'est affiché) |
+| Le prix d'une soirée en particulier | `prix` dans la séance |
 | Les places restantes | `placesRestantes` (**uniquement des chiffres réels**, sinon `null`) |
-| Les conditions d'annulation | `offre.annulation` |
-| Ce que comprend une place | `offre.comprend` |
-| Le lien de billetterie | `reservation.url` (tant qu'il est vide, « Réserver » ouvre un e-mail pré-rempli) |
-| L'adresse de contact | `contact.email` |
+| Les conditions d'annulation | `offre.annulation` (`null` = « publiées avec l'ouverture des réservations ») |
+| Le lien de billetterie | `reservation.url` (`null` = aucun bouton « Réserver ») |
+| L'adresse de contact | `contact.email` (`null` = aucune adresse affichée) |
 | Les engagements de sécurité | `securite` |
 | Les épisodes vidéo | `episodes` (renseigner `videoUrl` quand une vidéo est publiée) |
-| La mention « indicatif » | `placeholders` : mettre `false` quand les prix et les dates sont définitifs |
-
-⚠️ **Les valeurs actuelles sont des placeholders** : 85 €, 72 h, les dates d'octobre et l'adresse `bonjour@lacita.example`. Elles doivent être validées avant la mise en ligne.
 
 Le texte des chapitres de la nuit (heures, phrases, explications concrètes) se trouve dans `src/config/nuit.ts`.
 

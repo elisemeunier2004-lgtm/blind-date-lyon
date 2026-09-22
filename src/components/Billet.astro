@@ -1,25 +1,18 @@
 ---
-import type { Seance } from '../config/site';
-import { heure, jourLong } from '../lib/format';
-
-interface Props {
-  seance: Seance;
-}
-const { seance } = Astro.props;
+import { site } from '../config/site';
 ---
 
 <div class="billet papier" data-billet>
   <div class="billet__corps">
-    <p class="generique billet__numero">Séance Nº {seance.numero}</p>
-    <p class="billet__date affiche">{jourLong(seance.date)}</p>
-    <p class="generique">{heure(seance.date)} · {seance.quartier}</p>
+    <p class="generique billet__numero">LA SALA · {site.destination.ville}</p>
+    <p class="billet__date affiche">bientôt</p>
     <dl class="billet__places">
       <div>
         <dt class="generique">Votre place</dt>
-        <dd class="affiche">G · 17</dd>
+        <dd class="affiche"><em>à table</em></dd>
       </div>
       <div class="billet__voisine">
-        <dt class="generique">Place 18</dt>
+        <dt class="generique">La place d’en face</dt>
         <dd class="affiche"><em>réservée</em></dd>
       </div>
     </dl>

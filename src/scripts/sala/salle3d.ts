@@ -311,7 +311,7 @@ export async function creerSalle(toile: HTMLCanvasElement) {
   pivotAssise.add(assiseVoisin);
   voisin.add(pivotAssise);
 
-  // Le carton « PLACE 18 · RÉSERVÉE ».
+  // Le carton « RÉSERVÉE » (aucun numéro de place : rien n'est encore réel).
   const toileCarton = document.createElement('canvas');
   toileCarton.width = 512;
   toileCarton.height = 300;
@@ -324,13 +324,8 @@ export async function creerSalle(toile: HTMLCanvasElement) {
     c.strokeRect(18, 18, 476, 264);
     c.textAlign = 'center';
     c.fillStyle = C.burdeos;
-    c.font = `500 64px "Jost Variable", sans-serif`;
-    (c as CanvasRenderingContext2D & { letterSpacing?: string }).letterSpacing = '14px';
-    c.fillText('PLACE 18', 256, 140);
-    c.fillStyle = '#5e554f';
-    c.font = `italic 400 60px "Bodoni Moda Variable", serif`;
-    (c as CanvasRenderingContext2D & { letterSpacing?: string }).letterSpacing = '0px';
-    c.fillText('réservée', 256, 225);
+    c.font = `italic 400 92px "Bodoni Moda Variable", serif`;
+    c.fillText('réservée', 256, 182);
   }
   const texCarton = new CanvasTexture(toileCarton);
   texCarton.colorSpace = SRGBColorSpace;

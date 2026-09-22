@@ -1,15 +1,14 @@
 ---
 import { site } from '../config/site';
-import { prix, prixMinimum } from '../lib/format';
 
 const questions = [
   {
-    q: 'Qu’est-ce que je réserve, exactement ?',
-    r: `Une place, pour une soirée : un dîner à deux (ou une soirée de conversation selon le format), dans un lieu public partenaire, avec une personne que vous ne connaissez pas. À partir de ${prix(prixMinimum())} par personne, ${site.offre.prixComprend}.`,
+    q: 'Qu’est-ce que je réserverai, exactement ?',
+    r: 'Une place, pour une soirée : un dîner à deux, dans un lieu public, avec une personne que vous ne connaissez pas. Les dates, les lieux et les tarifs seront annoncés à l’ouverture.',
   },
   {
     q: 'Qui peut participer ?',
-    r: `Toute personne de ${site.offre.ageMinimum} ans et plus, disponible pour une vraie rencontre. Chaque séance indique sa tranche d’âge. Toutes les orientations sont les bienvenues : vous indiquez simplement qui vous souhaitez rencontrer.`,
+    r: `Toute personne de ${site.offre.ageMinimum} ans et plus, disponible pour une vraie rencontre. Chaque soirée indiquera sa tranche d’âge. Toutes les orientations sont les bienvenues : vous indiquez simplement qui vous souhaitez rencontrer.`,
   },
   {
     q: 'Comment composez-vous les rencontres ?',
@@ -21,11 +20,11 @@ const questions = [
   },
   {
     q: 'Est-ce que c’est sûr ?',
-    r: 'Oui, c’est notre premier engagement : lieu public, identité vérifiée, charte de respect, équipe joignable pendant la soirée, liberté de partir à tout moment. Vos coordonnées ne sont jamais transmises sans accord mutuel.',
+    r: 'C’est notre premier engagement : lieu public, charte de respect, liberté de partir à tout moment. Vos coordonnées ne sont jamais transmises sans accord mutuel. Le détail des mesures de sécurité sera publié avec l’ouverture.',
   },
   {
-    q: 'Et si je dois annuler ?',
-    r: site.offre.annulation,
+    q: 'Quand LA SALA ouvre-t-elle ?',
+    r: `${site.ouverture.annonce} Aucune date n’est encore annoncée : elle sera publiée ici en premier.`,
   },
 ];
 ---
