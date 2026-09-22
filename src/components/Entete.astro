@@ -1,0 +1,96 @@
+---
+import { site } from '../config/site';
+import { prix, prixMinimum } from '../lib/format';
+---
+
+<header class="entete">
+  <a class="entete__marque generique" href="#contenu" aria-label={`${site.marque}, retour au début`}>
+    {site.marque}
+  </a>
+
+  <p class="entete__heure affiche" aria-hidden="true" data-heure-courante>20:47</p>
+
+  <nav class="entete__nav" aria-label="Accès rapide">
+    <a class="entete__seances generique" href="#seances">
+      Les séances <span class="entete__prix">· dès {prix(prixMinimum())}</span>
+    </a>
+    <button class="entete__carte generique" type="button" data-ouvrir-carte aria-haspopup="dialog">
+      Carte de bal
+    </button>
+  </nav>
+</header>
+
+<style>
+  .entete {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 40;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: var(--sp-4);
+    padding: max(var(--sp-4), env(safe-area-inset-top)) var(--gouttiere) var(--sp-4);
+    color: var(--marfil);
+    background: linear-gradient(to bottom, rgb(8 7 10 / 0.72), rgb(8 7 10 / 0));
+    pointer-events: none;
+  }
+  .entete > * {
+    pointer-events: auto;
+  }
+  /* Hors de la salle (sections papier ou velours) : un bandeau net plutôt qu'un dégradé. */
+  :global(html[data-scene='papier']) .entete {
+    background: rgb(8 7 10 / 0.94);
+    padding-bottom: var(--sp-3);
+    transition: background-color var(--dur-micro) var(--ease-sortie);
+  }
+  :global(html[data-scene='papier']) .entete__heure {
+    opacity: 0;
+  }
+  /* Pendant la question : silence, la navigation s'efface. */
+  .entete__nav {
+    transition: opacity 900ms var(--ease-sortie);
+  }
+  :global(html[data-scene='question']) .entete__nav {
+    opacity: 0;
+    visibility: hidden;
+  }
+  .entete__marque {
+    justify-self: start;
+    text-decoration: none;
+    font-size: 0.8125rem;
+    letter-spacing: 0.32em;
+    padding-block: var(--sp-3);
+  }
+  .entete__heure {
+    font-style: italic;
+    font-size: 1.125rem;
+    font-variant-numeric: oldstyle-nums;
+    color: var(--champan);
+    transition: opacity var(--dur-micro) var(--ease-sortie);
+  }
+  .entete__nav {
+    justify-self: end;
+    display: none;
+    align-items: center;
+    gap: var(--sp-6);
+  }
+  .entete__seances,
+  .entete__carte {
+    text-decoration: none;
+    padding-block: var(--sp-3);
+    color: var(--marfil);
+  }
+  .entete__seances:hover,
+  .entete__carte:hover {
+    color: var(--champan);
+  }
+  .entete__prix {
+    color: var(--champan);
+  }
+
+  @media (min-width: 48rem) {
+    .entete__nav {
+      display: flex;
+    }
+  }
+</style>

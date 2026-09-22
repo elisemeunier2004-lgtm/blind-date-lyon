@@ -1,0 +1,144 @@
+---
+import { site } from '../config/site';
+import { lienReservation, prochaineSeance } from '../lib/format';
+
+const seance = prochaineSeance();
+---
+
+<section
+  id="fin"
+  class="fin"
+  aria-labelledby="fin-titre"
+  data-scene="fin"
+  data-heure="02:13"
+  data-heure-es="dos y trece"
+  data-tonalite="aube"
+  data-lumieres="allumees"
+  data-regard="voisin"
+  data-rideau="ferme"
+  data-strapontin="releve"
+  data-cle="1"
+  data-rose="1"
+>
+  <div class="fin__texte">
+    <h2 id="fin-titre" class="affiche fin__phrase">
+      Une place vous est réservée.<br /><em>Celle d’à côté aussi.</em>
+    </h2>
+    <div class="fin__actions">
+      <a class="bouton" href="#seances">Voir les séances</a>
+      <a class="lien-trace" href={lienReservation(seance)}>Réserver directement</a>
+    </div>
+    <p class="fin__mot affiche" aria-hidden="true">Fin.</p>
+  </div>
+</section>
+
+<footer class="pied">
+  <div class="conteneur pied__grille">
+    <div>
+      <p class="generique pied__marque">{site.marque}</p>
+      <p class="pied__destination">
+        {site.destination.mention} : {site.destination.ville}<br />
+        <span>{site.destination.prochaines}</span>
+      </p>
+    </div>
+    <nav aria-label="Pied de page">
+      <ul>
+        <li><a href="#seances">Les séances</a></li>
+        <li><a href="#engagement">L’engagement</a></li>
+        <li><a href="#questions">Questions</a></li>
+        <li><a href="#cartas"><span lang="es">Cartas</span> · épisodes</a></li>
+        <li><a href={`mailto:${site.contact.email}`}>Nous écrire</a></li>
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+<style>
+  .fin {
+    position: relative;
+    z-index: 1;
+    min-height: 140svh;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 50svh var(--gouttiere) 16svh;
+    text-align: center;
+  }
+  .fin__texte {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: var(--sp-6);
+  }
+  .fin__texte::before {
+    content: '';
+    position: absolute;
+    inset: -40% -30%;
+    z-index: -1;
+    background: radial-gradient(55% 55% at 50% 55%, rgb(8 7 10 / 0.85), transparent 75%);
+  }
+  .fin__phrase {
+    font-size: var(--fs-titre);
+    max-width: 18ch;
+  }
+  .fin__phrase em {
+    color: var(--champan);
+  }
+  .fin__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: var(--sp-5);
+  }
+  .fin__mot {
+    margin-top: var(--sp-8);
+    font-style: italic;
+    font-size: var(--fs-sous-titre);
+    color: rgb(241 233 220 / 0.6);
+  }
+
+  .pied {
+    position: relative;
+    z-index: 2;
+    background: var(--noche);
+    border-top: 1px solid var(--filet);
+    padding-block: var(--sp-8) calc(var(--sp-9) + env(safe-area-inset-bottom));
+    font-size: var(--fs-petit);
+    color: rgb(241 233 220 / 0.8);
+  }
+  .pied__grille {
+    display: grid;
+    gap: var(--sp-6);
+  }
+  .pied__marque {
+    letter-spacing: 0.32em;
+    color: var(--marfil);
+    margin-bottom: var(--sp-3);
+  }
+  .pied__destination span {
+    color: var(--texte-doux);
+  }
+  .pied ul {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--sp-1);
+  }
+  .pied a {
+    display: inline-block;
+    padding-block: var(--sp-2);
+    text-decoration: none;
+  }
+  .pied a:hover {
+    color: var(--champan);
+  }
+  @media (min-width: 48rem) {
+    .pied__grille {
+      grid-template-columns: 1fr auto;
+    }
+    .pied {
+      padding-bottom: var(--sp-8);
+    }
+  }
+</style>

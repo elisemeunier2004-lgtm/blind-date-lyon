@@ -1,0 +1,283 @@
+---
+/**
+ * LA SALA — la scène fixe derrière le récit.
+ *
+ * Deux couches :
+ * 1. L'AFFICHE (CSS + SVG) : toujours présente, affichée dès le premier rendu.
+ *    C'est l'expérience complète quand la 3D est indisponible
+ *    (réduction des animations, appareil modeste, WebGL absent).
+ * 2. LA 3D (three.js) : chargée en différé, elle se superpose à l'affiche
+ *    quand elle est prête.
+ *
+ * L'état de la scène est piloté par `data-*` sur `.salle` (voir scripts/sala/realisateur.ts).
+ */
+---
+
+<div
+  class="salle"
+  data-salle
+  data-rideau="ferme"
+  data-regard="ecran"
+  data-lumieres="eteintes"
+  data-tonalite="chaude"
+  data-strapontin="releve"
+  aria-hidden="true"
+>
+  <div class="affiche-salle">
+    <div class="affiche-salle__halo"></div>
+
+    <div class="affiche-salle__ecran">
+      <div class="affiche-salle__film">
+        <span class="affiche-salle__heure" data-ecran-heure>20:47</span>
+        <span class="affiche-salle__es" data-ecran-es>veinte y cuarenta y siete</span>
+      </div>
+    </div>
+
+    <div class="affiche-salle__rideau affiche-salle__rideau--g"></div>
+    <div class="affiche-salle__rideau affiche-salle__rideau--d"></div>
+    <div class="affiche-salle__lambrequin"></div>
+
+    <svg class="affiche-salle__rangs" viewBox="0 0 1200 260" preserveAspectRatio="xMidYMax slice">
+      <defs>
+        <linearGradient id="dossier" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#5b111e" />
+          <stop offset="0.35" stop-color="#3a0a12" />
+          <stop offset="1" stop-color="#140306" />
+        </linearGradient>
+      </defs>
+      <g fill="url(#dossier)">
+        {
+          [0, 1, 2].map((r) =>
+            Array.from({ length: 13 + r * 2 }, (_, i) => {
+              const n = 13 + r * 2;
+              const w = 1200 / n;
+              const y = 90 + r * 60;
+              const h = 260 - y;
+              return <rect x={i * w + w * 0.08} y={y} width={w * 0.84} height={h} rx={w * 0.16} />;
+            }),
+          )
+        }
+      </g>
+    </svg>
+
+    <div class="affiche-salle__voisin">
+      <svg viewBox="0 0 220 260" class="fauteuil">
+        <defs>
+          <linearGradient id="velours-voisin" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#7a1a28" />
+            <stop offset="0.5" stop-color="#4a0d17" />
+            <stop offset="1" stop-color="#1c0409" />
+          </linearGradient>
+        </defs>
+        <rect x="30" y="10" width="160" height="170" rx="26" fill="url(#velours-voisin)" />
+        <rect class="fauteuil__assise" x="34" y="150" width="152" height="40" rx="14" fill="#3a0a12" />
+        <rect x="4" y="120" width="30" height="130" rx="10" fill="#26060c" />
+        <rect x="186" y="120" width="30" height="130" rx="10" fill="#26060c" />
+        <g class="fauteuil__carton">
+          <rect x="70" y="44" width="80" height="46" rx="2" fill="#f1e9dc" />
+          <text x="110" y="63" text-anchor="middle" font-family="Jost Variable, sans-serif" font-size="9" letter-spacing="2" fill="#5b111e">PLACE 18</text>
+          <text x="110" y="78" text-anchor="middle" font-family="Jost Variable, sans-serif" font-size="7" letter-spacing="2" fill="#5e554f">RÉSERVÉE</text>
+        </g>
+      </svg>
+    </div>
+
+    <div class="affiche-salle__lumieres"></div>
+  </div>
+
+  <canvas class="salle__toile" data-salle-toile></canvas>
+  <div class="salle__vignette"></div>
+</div>
+
+<style>
+  .salle {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    background: var(--noche);
+    contain: strict;
+  }
+
+  /* ——— L'affiche (CSS) ——— */
+
+  .affiche-salle {
+    position: absolute;
+    inset: 0;
+    transition: opacity 1200ms var(--ease-fondu), transform 2400ms var(--ease-sortie);
+    transform-origin: 50% 40%;
+  }
+  .salle[data-regard='voisin'] .affiche-salle {
+    transform: scale(1.04) translateX(-2%);
+  }
+  .salle.est-3d .affiche-salle {
+    opacity: 0;
+  }
+
+  .affiche-salle__halo {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(60% 45% at 50% 30%, rgb(216 195 155 / 0.18), transparent 70%),
+      radial-gradient(120% 70% at 50% 110%, #1c0409, transparent 70%);
+    transition: opacity 1500ms var(--ease-fondu);
+  }
+
+  .affiche-salle__ecran {
+    position: absolute;
+    left: 50%;
+    top: 12%;
+    width: min(86vw, 82svh * 1.6);
+    aspect-ratio: 1.66;
+    transform: translateX(-50%);
+    background: #0d0a09;
+    box-shadow: 0 0 0 1px rgb(168 132 78 / 0.3);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+  @media (orientation: portrait) {
+    .affiche-salle__ecran {
+      top: 14%;
+      width: 88vw;
+    }
+  }
+  .affiche-salle__film {
+    display: grid;
+    justify-items: center;
+    gap: 0.4em;
+    color: var(--marfil);
+    transition: opacity 700ms var(--ease-fondu);
+  }
+  .salle[data-tonalite='lune'] .affiche-salle__ecran {
+    background: radial-gradient(circle at 70% 30%, #262a33, #0b0c10 60%);
+  }
+  .salle[data-tonalite='aube'] .affiche-salle__ecran {
+    background: linear-gradient(#1c2433, #0d0a09);
+  }
+  .affiche-salle__heure {
+    font-family: var(--font-affiche);
+    font-style: italic;
+    font-size: clamp(3rem, 13vw, 8rem);
+    line-height: 1;
+    font-variant-numeric: oldstyle-nums;
+  }
+  .affiche-salle__es {
+    font-family: var(--font-generique);
+    font-size: clamp(0.55rem, 1.4vw, 0.8rem);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--champan);
+  }
+
+  .affiche-salle__rideau {
+    position: absolute;
+    top: 6%;
+    bottom: 30%;
+    width: 52%;
+    background:
+      linear-gradient(to bottom, rgb(0 0 0 / 0.35), transparent 30%, rgb(0 0 0 / 0.55)),
+      repeating-linear-gradient(
+        90deg,
+        #2a060c 0,
+        #5b111e 2.2%,
+        #8a2433 3.6%,
+        #5b111e 5%,
+        #2a060c 7%
+      );
+    transition: transform 2600ms var(--ease-fondu);
+    box-shadow: inset 0 -3rem 3rem -2rem rgb(216 195 155 / 0.18);
+  }
+  .affiche-salle__rideau--g {
+    left: 0;
+    transform-origin: left center;
+  }
+  .affiche-salle__rideau--d {
+    right: 0;
+    transform-origin: right center;
+  }
+  .salle[data-rideau='ouvert'] .affiche-salle__rideau--g {
+    transform: translateX(-72%) scaleX(0.5);
+  }
+  .salle[data-rideau='ouvert'] .affiche-salle__rideau--d {
+    transform: translateX(72%) scaleX(0.5);
+  }
+
+  .affiche-salle__lambrequin {
+    position: absolute;
+    inset: 0 0 auto;
+    height: 9%;
+    background: repeating-linear-gradient(90deg, #1c0409 0, #4a0d17 3%, #1c0409 6%);
+    box-shadow: 0 1rem 2rem rgb(0 0 0 / 0.6);
+  }
+
+  .affiche-salle__rangs {
+    position: absolute;
+    inset: auto 0 0;
+    width: 100%;
+    height: 34%;
+  }
+
+  .affiche-salle__voisin {
+    position: absolute;
+    right: -6%;
+    bottom: -4%;
+    width: min(40vw, 22rem);
+    transition: transform 2000ms var(--ease-sortie), filter 2000ms var(--ease-sortie);
+    filter: brightness(0.55);
+  }
+  .salle[data-regard='voisin'] .affiche-salle__voisin {
+    transform: translateX(-30%) scale(1.25);
+    filter: brightness(1.1) drop-shadow(0 0 3rem rgb(216 195 155 / 0.25));
+  }
+  @media (orientation: portrait) {
+    .affiche-salle__voisin {
+      width: 46vw;
+      right: -14%;
+    }
+    .salle[data-regard='voisin'] .affiche-salle__voisin {
+      transform: translateX(-60%) translateY(-10%) scale(1.5);
+    }
+  }
+  .fauteuil__assise {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    transition: transform 1500ms var(--ease-fondu);
+    transform: scaleY(0.35);
+  }
+  .salle[data-strapontin='abaisse'] .fauteuil__assise {
+    transform: none;
+  }
+
+  .affiche-salle__lumieres {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(90% 60% at 50% 20%, rgb(233 201 160 / 0.28), transparent 70%);
+    opacity: 0;
+    transition: opacity 2400ms var(--ease-fondu);
+    pointer-events: none;
+  }
+  .salle[data-lumieres='allumees'] .affiche-salle__lumieres {
+    opacity: 1;
+  }
+
+  /* ——— La 3D ——— */
+
+  .salle__toile {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1600ms var(--ease-fondu);
+  }
+  .salle.est-3d .salle__toile {
+    opacity: 1;
+  }
+
+  .salle__vignette {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(120% 100% at 50% 45%, transparent 55%, rgb(8 7 10 / 0.75));
+  }
+</style>

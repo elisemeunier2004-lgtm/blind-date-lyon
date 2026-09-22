@@ -1,0 +1,119 @@
+---
+import { site } from '../config/site';
+import { prix, prixMinimum } from '../lib/format';
+
+const questions = [
+  {
+    q: 'Qu’est-ce que je réserve, exactement ?',
+    r: `Une place, pour une soirée : un dîner à deux (ou une soirée de conversation selon le format), dans un lieu public partenaire, avec une personne que vous ne connaissez pas. À partir de ${prix(prixMinimum())} par personne, ${site.offre.prixComprend}.`,
+  },
+  {
+    q: 'Qui peut participer ?',
+    r: `Toute personne de ${site.offre.ageMinimum} ans et plus, disponible pour une vraie rencontre. Chaque séance indique sa tranche d’âge. Toutes les orientations sont les bienvenues : vous indiquez simplement qui vous souhaitez rencontrer.`,
+  },
+  {
+    q: 'Comment composez-vous les rencontres ?',
+    r: 'À partir de vos réponses à un court questionnaire : vos intentions, ce qui compte pour vous, quelques histoires. Nous lisons ces réponses avec attention. Nous ne demandons ni photo, ni critère physique, et nous ne promettons pas « la bonne personne » : nous proposons une vraie rencontre.',
+  },
+  {
+    q: 'Et si je ne veux pas revoir la personne ?',
+    r: 'Personne ne le saura. Le lendemain, chacun·e répond en privé à « Se revoir ? ». Nous ne mettons en relation que si la réponse est oui des deux côtés.',
+  },
+  {
+    q: 'Est-ce que c’est sûr ?',
+    r: 'Oui, c’est notre premier engagement : lieu public, identité vérifiée, charte de respect, équipe joignable pendant la soirée, liberté de partir à tout moment. Vos coordonnées ne sont jamais transmises sans accord mutuel.',
+  },
+  {
+    q: 'Et si je dois annuler ?',
+    r: site.offre.annulation,
+  },
+];
+---
+
+<section id="questions" class="questions papier" aria-labelledby="questions-titre" data-scene="papier">
+  <div class="conteneur questions__grille">
+    <header>
+      <p class="generique questions__sur">Questions</p>
+      <h2 id="questions-titre" class="affiche questions__titre">Tout ce qu’il faut savoir <em>avant.</em></h2>
+    </header>
+    <div class="questions__liste">
+      {
+        questions.map(({ q, r }) => (
+          <details class="question">
+            <summary>
+              <span>{q}</span>
+            </summary>
+            <p>{r}</p>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .questions {
+    position: relative;
+    z-index: 2;
+    background: var(--fond);
+    color: var(--texte);
+    padding-block: var(--sp-9);
+  }
+  .questions__grille {
+    display: grid;
+    gap: var(--sp-7);
+  }
+  .questions__sur {
+    color: var(--accent);
+  }
+  .questions__titre {
+    font-size: var(--fs-titre);
+    margin-top: var(--sp-3);
+    max-width: 14ch;
+  }
+  .questions__titre em {
+    color: var(--accent);
+  }
+  .question {
+    border-bottom: 1px solid var(--filet);
+  }
+  .question:first-child {
+    border-top: 1px solid var(--filet);
+  }
+  .question summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--sp-4);
+    min-height: 3.5rem;
+    padding-block: var(--sp-4);
+    cursor: pointer;
+    list-style: none;
+    font-size: 1.125rem;
+  }
+  .question summary::-webkit-details-marker {
+    display: none;
+  }
+  .question summary::after {
+    content: '+';
+    font-family: var(--font-affiche);
+    font-size: 1.75rem;
+    line-height: 1;
+    color: var(--accent);
+    transition: transform var(--dur-micro) var(--ease-sortie);
+  }
+  .question[open] summary::after {
+    transform: rotate(45deg);
+  }
+  .question p {
+    padding-bottom: var(--sp-5);
+    max-width: var(--mesure);
+    color: var(--texte-doux);
+  }
+  @media (min-width: 56rem) {
+    .questions__grille {
+      grid-template-columns: 1fr 1.6fr;
+      gap: var(--sp-9);
+    }
+  }
+</style>

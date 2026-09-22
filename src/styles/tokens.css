@@ -1,0 +1,84 @@
+/*
+ * Tokens de la VISUAL WORLD BIBLE — V2.
+ * Primitives → sémantiques. Les composants n'utilisent que les sémantiques.
+ */
+
+:root {
+  /* — Primitives : palette — */
+  --noche: #08070a;
+  --terciopelo: #3a0a12;
+  --burdeos: #5b111e;
+  --rojo-rosa: #9b1b2c; /* matière uniquement : jamais du texte */
+  --marfil: #f1e9dc;
+  --champan: #d8c39b;
+  --oro-viejo: #a8844e;
+  --humo: #8f8680;
+  --sepia: #5e554f;
+
+  /* — Primitives : typographie — */
+  --font-affiche: 'Bodoni Moda Variable', 'Bodoni Moda', 'Didot', 'Bodoni 72', serif;
+  --font-generique: 'Jost Variable', 'Jost', 'Futura', 'Century Gothic', sans-serif;
+  --font-lettre: 'Libre Caslon Text', 'Big Caslon', 'Georgia', serif;
+
+  /* — Échelle (mobile d'abord, fluide) — */
+  --fs-heure: clamp(4.25rem, 22vw, 12rem);
+  --fs-question: clamp(2.25rem, 8.4vw, 6.25rem);
+  --fs-titre: clamp(2rem, 6.2vw, 4.25rem);
+  --fs-sous-titre: clamp(1.375rem, 3.6vw, 2.125rem);
+  --fs-lead: clamp(1.125rem, 2.3vw, 1.375rem);
+  --fs-corps: 1.0625rem;
+  --fs-petit: 0.9375rem;
+  --fs-label: 0.75rem;
+
+  /* — Espacement (densité aérée) — */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: 2rem;
+  --sp-7: 3rem;
+  --sp-8: 4rem;
+  --sp-9: 6rem;
+  --sp-10: 9rem;
+  --gouttiere: clamp(1.25rem, 5vw, 3rem);
+  --mesure: 34rem;
+
+  /* — Mouvement : adagio — */
+  --ease-sortie: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-fondu: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-micro: 240ms;
+  --dur-apparition: 1100ms;
+  --dur-revelation: 1500ms;
+
+  /* — Sémantiques : nuit (par défaut) — */
+  --fond: var(--noche);
+  --texte: var(--marfil);
+  --texte-doux: var(--humo);
+  --accent: var(--champan);
+  --action: var(--champan);
+  --sur-action: var(--noche);
+  --filet: rgb(241 233 220 / 0.16);
+  --focus: var(--champan);
+
+  color-scheme: dark;
+}
+
+/* Ambiance « papier » : pratique, lettres, programme. */
+.papier {
+  --fond: var(--marfil);
+  --texte: var(--noche);
+  --texte-doux: var(--sepia);
+  --accent: var(--burdeos);
+  --action: var(--noche);
+  --sur-action: var(--marfil);
+  --filet: rgb(8 7 10 / 0.16);
+  --focus: var(--burdeos);
+  color-scheme: light;
+}
+
+/* Ambiance « velours » : sections sombres hors de la salle. */
+.velours {
+  --fond: var(--terciopelo);
+  --filet: rgb(216 195 155 / 0.22);
+}

@@ -1,0 +1,95 @@
+---
+import { site } from '../config/site';
+---
+
+<section id="engagement" class="engagement velours" aria-labelledby="engagement-titre" data-scene="papier">
+  <div class="conteneur">
+    <p class="generique engagement__sur">L’engagement</p>
+    <h2 id="engagement-titre" class="affiche engagement__titre">
+      Le mystère concerne <em>la rencontre.</em><br />Jamais le reste.
+    </h2>
+
+    <div class="engagement__colonnes">
+      <div class="engagement__col">
+        <h3 class="generique">Ce qui reste secret</h3>
+        <ul>
+          <li>Le visage de la personne.</li>
+          <li>Son nom.</li>
+          <li>L’adresse exacte, jusqu’à la veille.</li>
+          <li>Ce qu’il se passera ce soir-là.</li>
+        </ul>
+      </div>
+      <div class="engagement__col engagement__col--clair">
+        <h3 class="generique">Ce qui ne l’est jamais</h3>
+        <ul>
+          {site.securite.map((ligne) => <li>{ligne}</li>)}
+          <li>Le prix, la date, le quartier et les conditions, annoncés avant de réserver.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .engagement {
+    position: relative;
+    z-index: 2;
+    background: var(--fond);
+    padding-block: var(--sp-9);
+  }
+  .engagement__sur {
+    color: var(--champan);
+  }
+  .engagement__titre {
+    font-size: var(--fs-titre);
+    margin-block: var(--sp-4) var(--sp-8);
+    max-width: 20ch;
+  }
+  .engagement__titre em {
+    color: var(--champan);
+  }
+  .engagement__colonnes {
+    display: grid;
+    gap: var(--sp-7);
+  }
+  .engagement__col h3 {
+    color: var(--texte-doux);
+    padding-bottom: var(--sp-3);
+    margin-bottom: var(--sp-4);
+    border-bottom: 1px solid var(--filet);
+  }
+  .engagement__col--clair h3 {
+    color: var(--champan);
+  }
+  .engagement__col ul {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--sp-3);
+  }
+  .engagement__col:not(.engagement__col--clair) li {
+    font-family: var(--font-affiche);
+    font-style: italic;
+    font-size: 1.375rem;
+    color: rgb(241 233 220 / 0.75);
+  }
+  .engagement__col--clair li {
+    padding-left: var(--sp-5);
+    position: relative;
+  }
+  .engagement__col--clair li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.75em;
+    width: 0.75rem;
+    height: 1px;
+    background: var(--champan);
+  }
+  @media (min-width: 56rem) {
+    .engagement__colonnes {
+      grid-template-columns: 1fr 1.3fr;
+      gap: var(--sp-9);
+    }
+  }
+</style>

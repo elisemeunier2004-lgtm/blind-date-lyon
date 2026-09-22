@@ -1,0 +1,139 @@
+---
+import { site } from '../config/site';
+---
+
+<section id="cartas" class="cartas" aria-labelledby="cartas-titre" data-scene="papier">
+  <div class="conteneur">
+    <p class="generique cartas__sur"><span lang="es">Cartas</span> · les épisodes</p>
+    <h2 id="cartas-titre" class="affiche cartas__titre">
+      Des voix, des objets, des tables. <em>Jamais de visages.</em>
+    </h2>
+    <p class="cartas__intro">
+      Bientôt, de courts films tournés pendant les séances : la veille, la nuit, le lendemain. Pour
+      comprendre l’expérience sans rien en dévoiler.
+    </p>
+
+    <ol class="cartas__liste" role="list">
+      {
+        site.episodes.map((e) => (
+          <li class="episode">
+            <div class="episode__cadre">
+              {e.videoUrl ? (
+                <video class="episode__video" src={e.videoUrl} controls preload="none" playsinline />
+              ) : (
+                <div class="episode__attente" aria-hidden="true">
+                  <span class="affiche">{String(e.numero).padStart(2, '0')}</span>
+                </div>
+              )}
+            </div>
+            <p class="generique episode__numero">
+              Épisode {e.numero} · {e.videoUrl ? 'disponible' : 'à venir'}
+            </p>
+            <h3 class="affiche episode__titre" lang="es">
+              {e.titre}
+            </h3>
+            <p class="episode__description">{e.description}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .cartas {
+    position: relative;
+    z-index: 2;
+    background: var(--noche);
+    padding-block: var(--sp-9);
+  }
+  .cartas__sur {
+    color: var(--champan);
+  }
+  .cartas__titre {
+    font-size: var(--fs-titre);
+    margin-block: var(--sp-4) var(--sp-5);
+    max-width: 20ch;
+  }
+  .cartas__titre em {
+    color: var(--champan);
+  }
+  .cartas__intro {
+    max-width: var(--mesure);
+    color: rgb(241 233 220 / 0.82);
+    font-size: var(--fs-lead);
+  }
+  .cartas__liste {
+    list-style: none;
+    padding: 0;
+    margin-top: var(--sp-8);
+    display: grid;
+    gap: var(--sp-7);
+  }
+  .episode {
+    display: grid;
+    gap: var(--sp-2);
+  }
+  .episode__cadre {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    background: var(--terciopelo);
+    overflow: hidden;
+    margin-bottom: var(--sp-3);
+    /* perforations de pellicule */
+    border-inline: 0.75rem solid #0d0a09;
+    box-shadow: 0 0 0 1px rgb(216 195 155 / 0.18);
+  }
+  .episode__cadre::before,
+  .episode__cadre::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 0.75rem;
+    background: repeating-linear-gradient(to bottom, transparent 0 0.6rem, rgb(241 233 220 / 0.25) 0.6rem 0.95rem, transparent 0.95rem 1.4rem);
+    z-index: 1;
+  }
+  .episode__cadre::before {
+    left: -0.75rem;
+  }
+  .episode__cadre::after {
+    right: -0.75rem;
+  }
+  .episode__video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .episode__attente {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background:
+      radial-gradient(60% 50% at 50% 45%, rgb(155 27 44 / 0.35), transparent 70%),
+      linear-gradient(#2a060c, #120307);
+  }
+  .episode__attente .affiche {
+    font-size: clamp(4rem, 14vw, 7rem);
+    font-style: italic;
+    color: rgb(241 233 220 / 0.22);
+    font-variant-numeric: oldstyle-nums;
+  }
+  .episode__numero {
+    color: var(--champan);
+  }
+  .episode__titre {
+    font-size: var(--fs-sous-titre);
+    font-style: italic;
+  }
+  .episode__description {
+    color: rgb(241 233 220 / 0.78);
+  }
+  @media (min-width: 48rem) {
+    .cartas__liste {
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--sp-6);
+    }
+  }
+</style>

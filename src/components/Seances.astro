@@ -1,0 +1,265 @@
+---
+import { site } from '../config/site';
+import { heure, jourLong, lienReservation, prix, prixSeance } from '../lib/format';
+
+const statutLibelle = {
+  ouverte: 'Places ouvertes',
+  complete: 'Séance complète. D’autres viendront.',
+  bientot: 'Ouverture prochaine',
+} as const;
+---
+
+<section id="seances" class="seances papier" aria-labelledby="seances-titre" data-scene="papier">
+  <div class="conteneur">
+    <header class="seances__entete">
+      <p class="generique seances__sur">Entracte · les lumières se rallument</p>
+      <h2 id="seances-titre" class="affiche seances__titre">Les séances</h2>
+      <p class="generique seances__sous">Dates, lieux, prix</p>
+      <p class="seances__intro">
+        Vous réservez <strong>une place</strong>, pour une soirée. La personne assise en face de vous est
+        choisie par nous, à partir de vos réponses, jamais sur photo. Vous ne choisissez personne.
+        Personne ne vous choisit.
+      </p>
+      {
+        site.placeholders && (
+          <p class="seances__indicatif generique" role="note">
+            Dates et tarifs indicatifs · en cours de validation
+          </p>
+        )
+      }
+    </header>
+
+    <ol class="seances__liste" role="list">
+      {
+        site.seances.map((s) => (
+          <li class="seance">
+            <div class="seance__talon">
+              <span class="generique">Séance</span>
+              <span class="affiche seance__numero">Nº {s.numero}</span>
+            </div>
+            <div class="seance__corps">
+              <p class="affiche seance__date">
+                {jourLong(s.date)} <span class="seance__heure">· {heure(s.date)}</span>
+              </p>
+              <p class="seance__format">
+                <span lang="es" class="seance__format-nom">{s.format}</span> — {s.formatDescription}
+              </p>
+              <dl class="seance__details">
+                <div>
+                  <dt class="generique">Quartier</dt>
+                  <dd>{s.quartier} <small>· adresse confiée la veille</small></dd>
+                </div>
+                <div>
+                  <dt class="generique">Pour qui</dt>
+                  <dd>{s.public}</dd>
+                </div>
+                <div>
+                  <dt class="generique">Prix</dt>
+                  <dd>
+                    <strong>{prix(prixSeance(s))}</strong> par personne · {site.offre.prixComprend}
+                  </dd>
+                </div>
+                {s.placesRestantes !== null && (
+                  <div>
+                    <dt class="generique">Places</dt>
+                    <dd>{s.placesRestantes} restantes</dd>
+                  </div>
+                )}
+              </dl>
+            </div>
+            <div class="seance__action">
+              <p class="generique seance__statut">{statutLibelle[s.statut]}</p>
+              {s.statut === 'ouverte' ? (
+                <a class="bouton" href={lienReservation(s)}>
+                  Réserver ma place
+                </a>
+              ) : s.statut === 'bientot' ? (
+                <a class="bouton bouton--filet" href={lienReservation(s)}>
+                  Être prévenu·e
+                </a>
+              ) : null}
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="seances__comprend">
+      <h3 class="generique">Ce que comprend votre place</h3>
+      <ul>
+        {site.offre.comprend.map((ligne) => <li>{ligne}</li>)}
+      </ul>
+      <p class="seances__conditions">
+        <span class="generique">Conditions</span>
+        {site.offre.annulation} Participation réservée aux personnes de {site.offre.ageMinimum} ans et plus.
+      </p>
+      {
+        !site.reservation.url && (
+          <p class="seances__note">
+            La billetterie en ligne ouvre bientôt. D’ici là, « Réserver ma place » ouvre un e-mail
+            pré-rempli : nous vous répondons personnellement.
+          </p>
+        )
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .seances {
+    position: relative;
+    z-index: 2;
+    background: var(--fond);
+    color: var(--texte);
+    padding-block: var(--sp-9) var(--sp-9);
+  }
+  .seances__entete {
+    display: grid;
+    gap: var(--sp-3);
+    max-width: 44rem;
+    margin-bottom: var(--sp-8);
+  }
+  .seances__sur {
+    color: var(--texte-doux);
+  }
+  .seances__titre {
+    font-size: var(--fs-titre);
+    font-style: italic;
+  }
+  .seances__sous {
+    color: var(--accent);
+  }
+  .seances__intro {
+    font-size: var(--fs-lead);
+    line-height: 1.55;
+    margin-top: var(--sp-4);
+  }
+  .seances__indicatif {
+    color: var(--accent);
+    margin-top: var(--sp-2);
+  }
+
+  .seances__liste {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--sp-5);
+  }
+  .seance {
+    display: grid;
+    grid-template-columns: 1fr;
+    border: 1px solid var(--filet);
+    background: rgb(255 255 255 / 0.35);
+  }
+  .seance__talon {
+    display: flex;
+    align-items: baseline;
+    gap: var(--sp-3);
+    padding: var(--sp-4) var(--sp-5);
+    border-bottom: 1px dashed var(--filet);
+    color: var(--accent);
+  }
+  .seance__numero {
+    font-size: 1.5rem;
+    font-style: italic;
+  }
+  .seance__corps {
+    padding: var(--sp-5);
+    display: grid;
+    gap: var(--sp-3);
+  }
+  .seance__date {
+    font-size: var(--fs-sous-titre);
+    text-transform: lowercase;
+  }
+  .seance__date::first-letter {
+    text-transform: uppercase;
+  }
+  .seance__heure {
+    font-style: italic;
+  }
+  .seance__format-nom {
+    font-style: italic;
+  }
+  .seance__details {
+    display: grid;
+    gap: var(--sp-3);
+    margin-top: var(--sp-2);
+  }
+  .seance__details div {
+    display: grid;
+    gap: var(--sp-1);
+  }
+  .seance__details dt {
+    color: var(--texte-doux);
+  }
+  .seance__details dd {
+    margin: 0;
+  }
+  .seance__details small {
+    color: var(--texte-doux);
+    font-size: var(--fs-petit);
+  }
+  .seance__action {
+    display: grid;
+    gap: var(--sp-3);
+    align-content: center;
+    padding: var(--sp-5);
+    border-top: 1px dashed var(--filet);
+  }
+  .seance__statut {
+    color: var(--texte-doux);
+  }
+
+  @media (min-width: 56rem) {
+    .seance {
+      grid-template-columns: 8.5rem 1fr 15rem;
+    }
+    .seance__talon {
+      flex-direction: column;
+      justify-content: center;
+      border-bottom: 0;
+      border-right: 1px dashed var(--filet);
+    }
+    .seance__action {
+      border-top: 0;
+      border-left: 1px dashed var(--filet);
+    }
+    .seance__details {
+      grid-template-columns: repeat(3, auto);
+      column-gap: var(--sp-6);
+    }
+  }
+
+  .seances__comprend {
+    display: grid;
+    gap: var(--sp-4);
+    max-width: var(--mesure);
+    margin-top: var(--sp-8);
+  }
+  .seances__comprend h3 {
+    color: var(--accent);
+  }
+  .seances__comprend ul {
+    padding-left: 1.1em;
+    display: grid;
+    gap: var(--sp-2);
+  }
+  .seances__comprend li::marker {
+    color: var(--accent);
+  }
+  .seances__conditions {
+    display: grid;
+    gap: var(--sp-1);
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--filet);
+  }
+  .seances__conditions .generique {
+    color: var(--accent);
+  }
+  .seances__note {
+    font-size: var(--fs-petit);
+    color: var(--texte-doux);
+    font-style: italic;
+  }
+</style>
