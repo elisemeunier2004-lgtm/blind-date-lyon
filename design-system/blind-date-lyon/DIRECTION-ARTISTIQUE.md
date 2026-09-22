@@ -1,5 +1,7 @@
 # Blind Date Lyon — Direction artistique
 
+> ⚠️ **Remplacé** par `design-system/marque/DIRECTION-DE-MARQUE-V2.md`. Conservé comme archive.
+
 > Document de référence de la marque. Aucune page n'est codée à ce stade.
 > Il fait autorité pour les futurs choix de design et d'intégration, et se déclinera plus tard en `MASTER.md` (tokens) et en règles propres à chaque page.
 
