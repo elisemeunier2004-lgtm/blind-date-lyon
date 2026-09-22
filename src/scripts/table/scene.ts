@@ -54,20 +54,17 @@ import {
   HAUTEUR_TABLE,
   assiette,
   bougie,
-  bouteille,
-  carafe,
   chaise,
   cle,
   couteau,
   creerMatieres,
-  cuillere,
   decalque,
   enveloppe,
   fourchette,
   nappe,
   rose,
   serviettePliee,
-  servietteFroissee,
+  traceSurVerre,
   table,
   verreAVin,
 } from './objets';
@@ -76,11 +73,11 @@ export type Plan = 'large' | 'place' | 'objets';
 
 const PLANS: Record<Plan, { pos: Vector3; vise: Vector3; fov: number; focus: number; ouverture: number }> = {
   // Plan large : la table, la salle derrière, la place vide au fond.
-  large: { pos: new Vector3(1.32, 1.3, 1.08), vise: new Vector3(-0.12, 0.84, -0.34), fov: 36, focus: 1.7, ouverture: 0.004 },
+  large: { pos: new Vector3(1.08, 1.27, 0.98), vise: new Vector3(-0.12, 0.8, -0.4), fov: 33, focus: 1.62, ouverture: 0.0034 },
   // Assis à sa place : en face, la chaise vide.
-  place: { pos: new Vector3(0.04, 1.12, 0.78), vise: new Vector3(-0.02, 0.86, -0.45), fov: 40, focus: 1.15, ouverture: 0.003 },
+  place: { pos: new Vector3(0.05, 1.1, 0.8), vise: new Vector3(-0.1, 0.83, -0.55), fov: 40, focus: 1.3, ouverture: 0.0032 },
   // Au ras de la nappe : l'enveloppe, la clé, la rose, la flamme.
-  objets: { pos: new Vector3(0.52, 0.86, 0.5), vise: new Vector3(0.12, 0.77, 0.08), fov: 32, focus: 0.55, ouverture: 0.006 },
+  objets: { pos: new Vector3(0.5, 0.87, 0.54), vise: new Vector3(0.1, 0.78, 0.1), fov: 30, focus: 0.5, ouverture: 0.006 },
 };
 
 export async function creerScene(toile: HTMLCanvasElement, options: { plan: Plan; fixe: boolean }) {
@@ -94,8 +91,8 @@ export async function creerScene(toile: HTMLCanvasElement, options: { plan: Plan
   renderer.shadowMap.type = PCFShadowMap;
 
   const scene = new Scene();
-  scene.background = new Color('#070506');
-  scene.fog = new FogExp2('#0a0506', 0.19);
+  scene.background = new Color('#060505');
+  scene.fog = new FogExp2('#070606', 0.18);
 
   const camera = new PerspectiveCamera(PLANS[options.plan].fov * (innerHeight > innerWidth ? 1.6 : 1), 1, 0.02, 30);
 
@@ -159,89 +156,100 @@ export async function creerScene(toile: HTMLCanvasElement, options: { plan: Plan
     scene.add(barre);
   }
 
-  // Appliques murales : deux petites lumières chaudes dans le fond.
-  const appliques: PointLight[] = [];
-  for (const x of [-1.25, 2.1]) {
-    const globe = new Mesh(new SphereGeometry(0.05, 16, 12), new MeshBasicMaterial({ color: new Color('#ffd49a').multiplyScalar(2.2) }));
-    globe.position.set(x, 1.85, -3.85);
-    scene.add(globe);
-    const l = new PointLight('#ffb870', 0.6, 3.5, 2);
-    l.position.copy(globe.position).add(new Vector3(0, 0, 0.1));
-    scene.add(l);
-    appliques.push(l);
+  // Une seule applique, loin, à gauche : la salle existe, sans se montrer.
+  const globe = new Mesh(new SphereGeometry(0.045, 16, 12), new MeshBasicMaterial({ color: new Color('#ffd49a').multiplyScalar(1.8) }));
+  globe.position.set(-1.45, 1.8, -3.85);
+  scene.add(globe);
+  const applique = new PointLight('#ffb870', 0.3, 3, 2);
+  applique.position.copy(globe.position).add(new Vector3(0, 0, 0.12));
+  scene.add(applique);
+
+  // D'autres bougies, très loin : seulement des points de lumière, flous.
+  for (const [x, y, z] of [
+    [-2.1, 0.95, -3.1],
+    [1.9, 1.0, -3.4],
+    [0.95, 0.92, -3.7],
+  ]) {
+    const point = new Mesh(new SphereGeometry(0.012, 8, 6), new MeshBasicMaterial({ color: new Color('#ffb46a').multiplyScalar(2.5) }));
+    point.position.set(x, y, z);
+    scene.add(point);
   }
 
   // ——— La table pour deux ———
   scene.add(table(m));
   scene.add(nappe(m));
-  const tache = decalque(tacheVin(), 0.05, 0.9);
-  tache.position.set(0.23, HAUTEUR_TABLE + 0.0065, 0.18);
+  const tache = decalque(tacheVin(), 0.04, 0.55);
+  tache.position.set(-0.13, HAUTEUR_TABLE + 0.0065, -0.02);
   scene.add(tache);
 
   const y0 = HAUTEUR_TABLE + 0.006;
 
-  // Place du visiteur (au premier plan) : déjà « habitée ».
+  // Ma place (premier plan).
   const chaiseIci = chaise(m);
   chaiseIci.position.set(0.02, 0, 0.6);
-  chaiseIci.rotation.y = 0.1;
+  chaiseIci.rotation.y = 0.06;
   scene.add(chaiseIci);
 
-  // Place d'en face : préparée pour quelqu'un qui n'est pas encore arrivé.
+  // La place d'en face : la chaise est tirée et tournée, comme si quelqu'un
+  // venait de se lever — ou allait s'asseoir.
   const chaiseVide = chaise(m);
-  chaiseVide.position.set(-0.05, 0, -0.72);
-  chaiseVide.rotation.y = Math.PI - 0.16;
+  chaiseVide.position.set(-0.2, 0, -0.93);
+  chaiseVide.rotation.y = Math.PI - 0.42;
   scene.add(chaiseVide);
 
-  for (const [z, sens] of [
-    [0.25, 1],
-    [-0.25, -1],
-  ] as const) {
-    const grande = assiette(m, 0.135);
-    grande.position.set(0, y0, z);
-    scene.add(grande);
-    const petite = assiette(m, 0.098);
-    petite.position.set(0, y0 + 0.007, z);
-    petite.rotation.y = 0.3;
-    scene.add(petite);
-
-    const f = fourchette(m);
-    f.position.set(-0.17 * sens, y0 + 0.001, z + 0.005 * sens);
-    f.rotation.y = (Math.PI / 2) * sens + 0.03 * sens;
-    scene.add(f);
-    const c = couteau(m);
-    c.position.set(0.165 * sens, y0 + 0.001, z - 0.004);
-    c.rotation.y = (Math.PI / 2) * sens - 0.02;
-    scene.add(c);
-    const cu = cuillere(m);
-    cu.position.set(0.205 * sens, y0 + 0.001, z + 0.01);
-    cu.rotation.y = (Math.PI / 2) * sens + 0.05;
-    scene.add(cu);
+  // Deux couverts : une assiette, une fourchette, un couteau. Rien de plus.
+  const ici = { z: 0.25, sens: 1 };
+  const face = { z: -0.25, sens: -1 };
+  for (const { z, sens } of [ici, face]) {
+    const a = assiette(m, 0.135);
+    a.position.set(0, y0, z);
+    scene.add(a);
   }
+  const fIci = fourchette(m);
+  fIci.position.set(-0.17, y0 + 0.001, 0.255);
+  fIci.rotation.y = Math.PI / 2 + 0.02;
+  scene.add(fIci);
+  const cIci = couteau(m);
+  cIci.position.set(0.165, y0 + 0.001, 0.246);
+  cIci.rotation.y = Math.PI / 2 - 0.015;
+  scene.add(cIci);
+  // En face, le couvert a bougé : la fourchette a glissé, le couteau est de biais.
+  const fFace = fourchette(m);
+  fFace.position.set(0.19, y0 + 0.001, -0.225);
+  fFace.rotation.y = -Math.PI / 2 - 0.11;
+  scene.add(fFace);
+  const cFace = couteau(m);
+  cFace.position.set(-0.158, y0 + 0.001, -0.27);
+  cFace.rotation.y = -Math.PI / 2 + 0.07;
+  scene.add(cFace);
 
-  // Les verres : le mien est servi, celui d'en face attend.
+  // Les verres. Le mien, servi. Celui d'en face a été déplacé vers le centre,
+  // il reste un fond de vin et une trace à peine visible sur le bord.
   const verreIci = verreAVin(m, 0.55);
   verreIci.position.set(0.19, y0, 0.08);
   scene.add(verreIci);
-  const verreVide = verreAVin(m, 0);
-  verreVide.position.set(-0.2, y0, -0.1);
-  scene.add(verreVide);
+  const verreFace = verreAVin(m, 0.08);
+  verreFace.position.set(-0.1, y0, -0.05);
+  verreFace.rotation.y = 2.2;
+  verreFace.add(traceSurVerre());
+  scene.add(verreFace);
 
-  // Serviettes : dépliée et froissée ici, pliée en face.
-  const froissee = servietteFroissee(m);
-  froissee.position.set(-0.3, y0, 0.3);
-  froissee.rotation.y = 0.6;
-  scene.add(froissee);
-  const pliee = serviettePliee(m);
-  pliee.position.set(0.3, y0 + 0.007, -0.26);
-  pliee.rotation.y = 0.04;
-  scene.add(pliee);
+  // Serviettes : la mienne, pliée. Celle d'en face, dépliée à moitié, posée de travers.
+  const plieeIci = serviettePliee(m);
+  plieeIci.position.set(-0.3, y0 + 0.007, 0.27);
+  plieeIci.rotation.y = 0.02;
+  scene.add(plieeIci);
+  const poseeFace = serviettePliee(m, true);
+  poseeFace.position.set(-0.3, y0 + 0.007, -0.3);
+  poseeFace.rotation.y = 0.32;
+  scene.add(poseeFace);
 
-  // La bougie, au centre, un peu décalée.
+  // La bougie, un peu décalée du centre.
   const b = bougie(m);
-  b.groupe.position.set(0.1, y0, -0.02);
+  b.groupe.position.set(0.1, y0, 0.0);
   scene.add(b.groupe);
-  const lumiereBougie = new PointLight('#ffa95c', 0.55, 0, 2);
-  lumiereBougie.position.set(0.1, y0 + b.hauteurFlamme + 0.01, -0.02);
+  const lumiereBougie = new PointLight('#ffa95c', 0.5, 0, 2);
+  lumiereBougie.position.set(0.1, y0 + b.hauteurFlamme + 0.01, 0.0);
   lumiereBougie.castShadow = true;
   lumiereBougie.shadow.mapSize.set(1024, 1024);
   lumiereBougie.shadow.radius = 6;
@@ -249,53 +257,22 @@ export async function creerScene(toile: HTMLCanvasElement, options: { plan: Plan
   lumiereBougie.shadow.camera.near = 0.01;
   scene.add(lumiereBougie);
 
-  // Bouteille et carafe, sur le côté.
-  const bt = bouteille(m);
-  bt.position.set(-0.42, y0, 0.02);
-  bt.rotation.y = 0.8;
-  scene.add(bt);
-  const cf = carafe(m);
-  cf.position.set(-0.36, y0, -0.2);
-  scene.add(cf);
-
-  // La rose, posée en travers de l'assiette vide.
+  // La rose : une seule tige, simplement posée sur la nappe, à côté de l'assiette d'en face.
   const r = rose(m);
-  r.rotation.set(0, 0.5, -Math.PI / 2 + 0.12);
-  r.position.set(0.06, y0 + 0.04, -0.23);
+  r.scale.setScalar(0.85);
+  r.rotation.set(0.04, -0.25, -Math.PI / 2 + 0.06);
+  r.position.set(0.1, y0 + 0.017, -0.45);
   scene.add(r);
 
   // L'enveloppe et la clé, près de ma place.
   const env = enveloppe(m);
-  env.position.set(0.3, y0 + 0.002, 0.3);
+  env.position.set(0.31, y0 + 0.002, 0.31);
   env.rotation.y = -0.35;
   scene.add(env);
   const k = cle(m);
-  k.position.set(0.27, y0 + 0.012, 0.36);
+  k.position.set(0.28, y0 + 0.012, 0.37);
   k.rotation.z = 0.8;
   scene.add(k);
-
-  // ——— La salle au loin : d'autres tables, d'autres bougies (en flou) ———
-  const linLointain = m.lin.clone();
-  linLointain.color.set('#5e5048');
-  const lointains = new Group();
-  for (const [x, z] of [
-    [-2.3, -2.6],
-    [2.4, -3.1],
-    [-0.6, -3.4],
-  ]) {
-    const t = new Group();
-    t.add(table(m, 0.8, 0.8));
-    t.add(nappe({ ...m, lin: linLointain }, 0.8, 0.8, 0.55));
-    const bb = bougie(m);
-    bb.groupe.position.y = HAUTEUR_TABLE;
-    t.add(bb.groupe);
-    const l = new PointLight('#ffa95c', 0.12, 1.6, 2);
-    l.position.set(0, HAUTEUR_TABLE + 0.32, 0);
-    t.add(l);
-    t.position.set(x, 0, z);
-    lointains.add(t);
-  }
-  scene.add(lointains);
 
   // La suspension en laiton au-dessus de la table (elle se reflète dans le métal et le verre).
   const abatJour = new Group();
@@ -322,12 +299,24 @@ export async function creerScene(toile: HTMLCanvasElement, options: { plan: Plan
   suspension.shadow.bias = -0.0003;
   scene.add(suspension, suspension.target);
 
+  // Contre-jour discret derrière la place vide : il dessine la silhouette de la chaise,
+  // comme le ferait un photographe, sans qu'on voie d'où vient la lumière.
+  const contreJour = new SpotLight('#d9d2c6', 5.5, 0, 0.5, 0.9, 2);
+  contreJour.position.set(-0.55, 1.9, -2.3);
+  contreJour.target.position.set(-0.2, 0.75, -0.9);
+  scene.add(contreJour, contreJour.target);
+  // La nappe blanche renvoie la lumière vers la place d'en face : un rebond chaud, très doux.
+  // Placé sous le plateau : il n'éclaire que la chaise, jamais la table.
+  const rebond = new PointLight('#ffd6a8', 0.45, 1.3, 2);
+  rebond.position.set(-0.18, 0.6, -0.62);
+  scene.add(rebond);
+
   // ——— Reflets : la salle photographiée depuis la table sert d'environnement ———
   const pmrem = new PMREMGenerator(renderer);
   const cible = new WebGLCubeRenderTarget(256, { type: HalfFloatType });
   const cubeCam = new CubeCamera(0.05, 20, cible);
   cubeCam.position.set(0.05, HAUTEUR_TABLE + 0.2, 0);
-  const verres = [verreIci, verreVide, cf];
+  const verres = [verreIci, verreFace];
   verres.forEach((v) => (v.visible = false));
   cubeCam.update(renderer, scene);
   verres.forEach((v) => (v.visible = true));
@@ -350,9 +339,15 @@ export async function creerScene(toile: HTMLCanvasElement, options: { plan: Plan
       float h(vec2 p){ return fract(sin(dot(p, vec2(12.9898,78.233)) + uTemps) * 43758.5453); }
       void main(){
         vec4 c = texture2D(tDiffuse, vUv);
-        float g = (h(vUv * 1000.0) - 0.5) * 0.045;
-        float vig = smoothstep(1.15, 0.35, length((vUv - 0.5) * vec2(1.25, 1.0)));
-        c.rgb = (c.rgb + g) * mix(0.55, 1.0, vig);
+        // Étalonnage « photo éditoriale » : légère désaturation, noirs neutres,
+        // hautes lumières chaudes, courbe douce. Puis grain et vignettage.
+        float l = dot(c.rgb, vec3(0.2126, 0.7152, 0.0722));
+        c.rgb = mix(vec3(l), c.rgb, 0.82);
+        c.rgb = mix(c.rgb * vec3(0.96, 0.98, 1.02), c.rgb * vec3(1.04, 1.0, 0.93), smoothstep(0.15, 0.7, l));
+        c.rgb = c.rgb * c.rgb * (3.0 - 2.0 * c.rgb) * 0.35 + c.rgb * 0.65;
+        float g = (h(vUv * 1000.0) - 0.5) * 0.05;
+        float vig = smoothstep(1.2, 0.3, length((vUv - 0.5) * vec2(1.3, 1.0)));
+        c.rgb = (c.rgb + g) * mix(0.5, 1.0, vig);
         gl_FragColor = c;
       }`,
   });

@@ -75,15 +75,15 @@ export function creerMatieres(t: {
       color: '#ffffff',
       map: t.velours,
       roughness: 0.95,
-      sheen: 1,
-      sheenColor: new Color('#d8606e'),
-      sheenRoughness: 0.35,
+      sheen: 0.8,
+      sheenColor: new Color('#7a4a4e'),
+      sheenRoughness: 0.4,
     }),
     porcelaine: new MeshPhysicalMaterial({
       color: '#f4efe6',
-      roughness: 0.28,
-      clearcoat: 1,
-      clearcoatRoughness: 0.08,
+      roughness: 0.42,
+      clearcoat: 0.5,
+      clearcoatRoughness: 0.32,
     }),
     orFilet: new MeshStandardMaterial({ color: '#c9a064', metalness: 1, roughness: 0.28, envMapIntensity: 4 }),
     argent: new MeshStandardMaterial({ color: '#d6d0c6', metalness: 0.82, roughness: 0.26, envMapIntensity: 5 }),
@@ -137,11 +137,11 @@ export function creerMatieres(t: {
     cireCachet: new MeshPhysicalMaterial({ color: '#6c0e1c', roughness: 0.38, clearcoat: 0.6, clearcoatRoughness: 0.25 }),
     papier: new MeshStandardMaterial({ map: t.papier, roughness: 0.95 }),
     petale: new MeshPhysicalMaterial({
-      color: '#5c0714',
-      roughness: 0.55,
-      sheen: 0.7,
-      sheenColor: new Color('#b93a4a'),
-      sheenRoughness: 0.5,
+      color: '#521019',
+      roughness: 0.58,
+      sheen: 0.45,
+      sheenColor: new Color('#8a3a42'),
+      sheenRoughness: 0.55,
       side: DoubleSide,
     }),
     tige: new MeshStandardMaterial({ color: '#1f2a17', roughness: 0.7 }),
@@ -371,10 +371,50 @@ export function cuillere(m: Matieres) {
 }
 
 // ——— Serviette : pliée, ou dépliée et froissée (quelqu'un est déjà là) ———
-export function serviettePliee(m: Matieres) {
-  const s = new Mesh(new RoundedBoxGeometry(0.1, 0.014, 0.16, 3, 0.006), m.lin);
-  return ombres(s);
+/** Serviette pliée. `imparfaite` : pliée de travers, un coin relevé, le tissu qui gonfle. */
+export function serviettePliee(m: Matieres, imparfaite = false) {
+  const geo = new RoundedBoxGeometry(0.1, 0.014, 0.16, 4, 0.006);
+  if (imparfaite) {
+    const p = geo.attributes.position as BufferAttribute;
+    for (let i = 0; i < p.count; i++) {
+      const x = p.getX(i);
+      const y = p.getY(i);
+      const z = p.getZ(i);
+      const coin = Math.max(0, x - 0.015) * Math.max(0, z - 0.035) * 2.4;
+      const gonfle = (fbm(x * 30 + 2, z * 30) - 0.5) * 0.004 + Math.sin((z / 0.16) * Math.PI) * 0.002;
+      p.setXYZ(i, x + z * 0.09, y + (y > 0 ? coin + gonfle : coin * 0.8), z);
+    }
+    geo.computeVertexNormals();
+  }
+  return ombres(new Mesh(geo, m.lin));
 }
+/** Serviette dépliée à moitié, posée de travers : quelqu'un l'a touchée. */
+export function serviettePosee(m: Matieres) {
+  const geo = new PlaneGeometry(0.15, 0.2, 40, 52);
+  geo.rotateX(-Math.PI / 2);
+  const p = geo.attributes.position as BufferAttribute;
+  for (let i = 0; i < p.count; i++) {
+    const x = p.getX(i);
+    const z = p.getZ(i);
+    // Repliée en deux sur la moitié arrière, bord avant soulevé, un coin retourné.
+    const pli = z < 0 ? 0.005 + Math.sin(Math.min(1, -z / 0.1) * Math.PI) * 0.004 : 0.0015;
+    const coin = Math.max(0, x - 0.035) * Math.max(0, z - 0.05) * 2.2;
+    const ondule = (fbm(x * 22 + 4, z * 22) - 0.5) * 0.007 + Math.sin(x * 60 + z * 20) * 0.0012;
+    p.setXYZ(i, x + (fbm(z * 6, 2) - 0.5) * 0.01, Math.max(0.0008, pli + coin + ondule), z);
+  }
+  geo.computeVertexNormals();
+  return ombres(new Mesh(geo, m.lin));
+}
+
+/** Trace à peine visible sur le bord d'un verre (ni rouge à lèvres, ni symbole). */
+export function traceSurVerre() {
+  const geo = new CylinderGeometry(0.0346, 0.0352, 0.009, 24, 1, true, 0.2, 0.55);
+  const mat = new MeshStandardMaterial({ color: '#6d5550', roughness: 0.6, transparent: true, opacity: 0.16, depthWrite: false, side: DoubleSide });
+  const t = new Mesh(geo, mat);
+  t.position.y = 0.2085;
+  return t;
+}
+
 export function servietteFroissee(m: Matieres) {
   const geo = new PlaneGeometry(0.3, 0.3, 48, 48);
   geo.rotateX(-Math.PI / 2);
@@ -466,17 +506,23 @@ function geoPetale(l: number, h: number, creux: number, enroule: number) {
 export function rose(m: Matieres) {
   const g = new Group();
   const bouton = new Group();
-  const n = 26;
+  // Une rose simple, à peine ouverte : pétales irréguliers, aucun n'est parfait.
+  const alea = (i: number) => {
+    const x = Math.sin(i * 91.3 + 7.1) * 43758.5453;
+    return x - Math.floor(x);
+  };
+  const n = 17;
   for (let i = 0; i < n; i++) {
     const t = i / (n - 1);
-    const angle = i * 2.39996;
-    const l = 0.018 + t * 0.022;
-    const h = 0.024 + t * 0.018;
-    const petale = new Mesh(geoPetale(l, h, 0.004 + t * 0.008, t * t * 0.012), m.petale);
+    const angle = i * 2.39996 + (alea(i) - 0.5) * 0.5;
+    const l = (0.016 + t * 0.018) * (0.88 + alea(i + 3) * 0.24);
+    const h = (0.022 + t * 0.014) * (0.9 + alea(i + 5) * 0.2);
+    const petale = new Mesh(geoPetale(l, h, 0.004 + t * 0.006, t * t * 0.007 + alea(i + 9) * 0.002), m.petale);
     const pivot = new Group();
     pivot.rotation.y = angle;
-    petale.position.z = 0.0015 + t * 0.011;
-    petale.rotation.x = 0.12 + t * t * 1.05;
+    petale.position.z = 0.0015 + t * 0.009;
+    petale.rotation.x = 0.1 + t * t * 0.75 + (alea(i + 11) - 0.5) * 0.12;
+    petale.rotation.z = (alea(i + 13) - 0.5) * 0.18;
     pivot.add(petale);
     bouton.add(pivot);
   }

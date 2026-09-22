@@ -150,7 +150,8 @@ export function papierTexture() {
 export function platreTextures() {
   const map = peindre(512, (u, v) => {
     const n = fbm(u * 5, v * 5) * 0.6 + fbm(u * 30, v * 30) * 0.4;
-    return [34 + n * 22, 9 + n * 7, 13 + n * 8];
+    // Presque noir, une pointe chaude : la nuit, pas le bordeaux.
+    return [17 + n * 12, 12 + n * 8, 11 + n * 7];
   }, true, 2);
   const roughnessMap = peindre(256, (u, v) => {
     const r = 180 + fbm(u * 8, v * 8) * 70;
@@ -163,7 +164,8 @@ export function platreTextures() {
 export function veloursTexture() {
   return peindre(256, (u, v) => {
     const n = fbm(u * 8, v * 8) * 0.7 + fbm(u * 40, v * 40) * 0.3;
-    return [70 + n * 40, 12 + n * 8, 22 + n * 10];
+    // Velours très sombre : le rouge ne se révèle que dans la lumière.
+    return [36 + n * 20, 11 + n * 6, 14 + n * 6];
   }, true, 2);
 }
 
