@@ -484,7 +484,7 @@ export function bougie(m: Matieres) {
   flamme.position.y = 0.155 + hCire + 0.022;
   flamme.renderOrder = 10;
   g.add(flamme);
-  return { groupe: g, flamme, matFlamme, hauteurFlamme: flamme.position.y };
+  return { groupe: g, flamme, matFlamme, hauteurFlamme: flamme.position.y, cire, hCire };
 }
 
 // ——— Rose : pétales incurvés en spirale (phyllotaxie), tige, feuille, épines ———

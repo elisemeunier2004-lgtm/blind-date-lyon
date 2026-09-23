@@ -1,197 +1,321 @@
 ---
 import Base from '../layouts/Base.astro';
 import Entete from '../components/Entete.astro';
-import BarreBasse from '../components/BarreBasse.astro';
-import CarteDeBal from '../components/CarteDeBal.astro';
-import Salle from '../components/Salle.astro';
-import Billet from '../components/Billet.astro';
-import Chapitre from '../components/Chapitre.astro';
-import Seances from '../components/Seances.astro';
-import Engagement from '../components/Engagement.astro';
-import Questions from '../components/Questions.astro';
-import Cartas from '../components/Cartas.astro';
-import Fin from '../components/Fin.astro';
+import Scene from '../components/Scene.astro';
+import Clarte from '../components/Clarte.astro';
 import { site } from '../config/site';
-import { chapitres } from '../config/nuit';
+import { etapes, soiree } from '../config/recit';
 import { lienInformation } from '../lib/format';
 
-const titre = `${site.marque} · Une place vous est réservée · ${site.destination.ville}`;
-const description = `${site.offre.enUneLigne} Pas de photo, pas de profil : vous réservez une place, pas une personne. ${site.ouverture.annonce}`;
+const titre = `${site.marque} · Dîners à l’aveugle · bientôt à ${site.destination.ville}`;
+const description =
+  'Une table pour deux. Une personne que vous n’avez pas choisie. Dîners à l’aveugle, sans photo ni profil. LA SALA arrive bientôt à Lyon.';
+const lien = site.ouverture.lienInformation;
 ---
 
 <Base titre={titre} description={description}>
-  <Salle />
+  <link slot="tete" rel="preload" as="image" href="/scene/arrivee-p.jpg" media="(orientation: landscape)" />
+  <link slot="tete" rel="preload" as="image" href="/scene/arrivee-v.jpg" media="(orientation: portrait)" />
+
+  <Scene />
   <Entete />
 
   <main id="contenu" class="recit">
-    <!-- 20:47 · L'invitation -->
-    <section
-      id="entree"
-      class="entree"
-      aria-labelledby="entree-titre"
-      data-scene="entree"
-      data-heure="20:47"
-      data-heure-es="veinte y cuarenta y siete"
-      data-rideau="ferme"
-    >
-      <div class="entree__texte">
-        <p class="generique entree__sur">
-          <span class="affiche entree__h">20:47</span> La séance va commencer
-        </p>
-        <h1 id="entree-titre" class="affiche entree__titre">Vous ne savez pas qui vous attend.</h1>
-        <p class="affiche entree__suite"><em>Et c’est précisément le principe.</em></p>
-
-        <p class="entree__clarte">
-          {site.offre.enUneLigne} Pas de photo, pas de profil : vous réservez une place, pas une personne.
-        </p>
-
-        <p class="entree__faits generique">
-          {site.ouverture.annonce}
-        </p>
-
-        <div class="entree__billet">
-          <Billet />
-          <a class="lien-trace entree__passer" href={lienInformation()}>Être informé de l’ouverture</a>
-        </div>
-        <p class="entree__retour generique" data-retour hidden>Bon retour. La séance continue.</p>
+    <!-- 1. Arrivée -->
+    <section class="moment moment--arrivee" data-plan="arrivee" aria-labelledby="arrivee-titre">
+      <div class="texte texte--arrivee">
+        <h1 id="arrivee-titre" class="affiche arrivee__titre">
+          Une table pour deux.<br />Une personne que vous n’avez pas choisie.
+        </h1>
+        <p class="arrivee__sous">Dîners à l’aveugle · bientôt à {site.destination.ville}</p>
+        <a class="appel" href={lienInformation()}>Être informé de l’ouverture</a>
       </div>
     </section>
 
-    <!-- La question, seule. Aucun appel à l'achat juste après. -->
-    <section
-      id="question"
-      class="question-fondatrice"
-      aria-labelledby="question-titre"
-      data-scene="question"
-      data-heure="20:55"
-      data-heure-es=""
-      data-rideau="ouvert"
-    >
-      <h2 id="question-titre" class="affiche question-fondatrice__texte">
-        Et si nous arrêtions de <em>choisir</em> avant de rencontrer&nbsp;?
-      </h2>
+    <!-- 2. La question, seule. Du silence avant et après. -->
+    <section class="moment moment--question" data-plan="flamme" data-jour="0.45" aria-labelledby="question-titre">
+      <h2 id="question-titre" class="affiche question">Et si nous arrêtions de choisir avant de rencontrer&nbsp;?</h2>
+    </section>
+    <div class="silence" data-plan="flamme" data-jour="0.45" aria-hidden="true"></div>
+
+    <!-- 3. Comment ça se passe -->
+    <section class="deroule" aria-labelledby="deroule-titre">
+      <h2 id="deroule-titre" class="sr-only">Comment ça se passe</h2>
+      {
+        etapes.map((e, i) => (
+          <article class="moment moment--etape" data-plan={e.plan} data-bougie={e.bougie} data-jour={e.jour}>
+            <div class="texte">
+              {i === 0 && <p class="etiquette">Comment ça se passe</p>}
+              <p class="compte" aria-hidden="true">
+                {i + 1} / {etapes.length}
+              </p>
+              <h3 class="etape__titre">{e.titre}</h3>
+              <p class="etape__texte">{e.texte}</p>
+            </div>
+          </article>
+        ))
+      }
     </section>
 
-    {chapitres.map((c) => <Chapitre chapitre={c} />)}
+    <!-- 4. La place vide -->
+    <section class="moment moment--place" data-plan="place" aria-labelledby="place-titre">
+      <div class="texte texte--place">
+        <h2 id="place-titre" class="affiche place">Cette place est pour quelqu’un que vous ne connaissez pas encore.</h2>
+      </div>
+    </section>
 
-    <Seances />
-    <Engagement />
-    <Questions />
-    <Cartas />
-    <Fin />
+    <!-- 5. Une soirée -->
+    <section class="soiree" aria-labelledby="soiree-titre">
+      <h2 id="soiree-titre" class="sr-only">Une soirée</h2>
+      {
+        soiree.map((e, i) => (
+          <article class="moment moment--soiree" data-plan={e.plan} data-bougie={e.bougie} data-jour={e.jour}>
+            <div class="texte">
+              {i === 0 && <p class="etiquette">Une soirée</p>}
+              <h3 class="etape__titre">{e.titre}</h3>
+              <p class="etape__texte">{e.texte}</p>
+            </div>
+          </article>
+        ))
+      }
+    </section>
+
+    <!-- 6. Ce qu'il faut savoir -->
+    <Clarte />
+
+    <!-- 7. Fin -->
+    <section id="ouverture" class="moment moment--fin" data-plan="fin" data-bougie="basse" aria-labelledby="fin-titre">
+      <div class="texte texte--fin">
+        <h2 id="fin-titre" class="affiche fin__titre">
+          Vous ne vous êtes pas choisis.<br />Vous êtes simplement venus.
+        </h2>
+        <p class="fin__annonce">{site.ouverture.annonce}</p>
+        {
+          lien ? (
+            <a class="appel" href={lien}>
+              Être informé de l’ouverture
+            </a>
+          ) : (
+            <>
+              <p class="appel appel--inactif" aria-disabled="true">
+                Être informé de l’ouverture
+              </p>
+              <p class="fin__note">L’inscription à l’annonce d’ouverture arrive très prochainement, ici même.</p>
+            </>
+          )
+        }
+      </div>
+    </section>
   </main>
 
-  <CarteDeBal />
-  <BarreBasse />
+  <footer class="pied">
+    <p>
+      {site.marque} · {site.destination.mention} : {site.destination.ville}
+    </p>
+    <p class="pied__doux">{site.destination.prochaines}</p>
+    {site.contact.email && <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>}
+  </footer>
 </Base>
 
 <style>
   .recit {
     position: relative;
     z-index: 1;
-    /* Les halos décoratifs ne doivent jamais élargir la page (clip, et non hidden : le sticky reste actif). */
     overflow-x: clip;
   }
 
-  .entree {
+  /* — Un moment = un plan de la table. Le texte est posé dans l'ombre du cadre :
+       à gauche en paysage, en haut en portrait. — */
+  .moment {
     position: relative;
-    min-height: 100svh;
-    display: flex;
-    align-items: flex-end;
-    padding: 46svh var(--gouttiere) calc(var(--sp-9) + env(safe-area-inset-bottom));
+    min-height: 130svh;
+    padding: 0 var(--gouttiere);
   }
-  .entree__texte {
-    position: relative;
-    display: grid;
-    gap: var(--sp-4);
-    max-width: 40rem;
-  }
-  .entree__texte::before {
-    content: '';
-    position: absolute;
-    inset: -25% calc(var(--gouttiere) * -1) -20%;
-    z-index: -1;
-    background: linear-gradient(to top, rgb(8 7 10 / 0.95) 45%, rgb(8 7 10 / 0.6) 75%, transparent);
-  }
-  .entree__sur {
-    display: flex;
-    align-items: baseline;
-    gap: var(--sp-3);
-    color: var(--champan);
-  }
-  .entree__h {
-    font-size: 1.5rem;
-    font-style: italic;
-    letter-spacing: 0;
-    text-transform: none;
-    font-variant-numeric: oldstyle-nums;
-  }
-  .entree__titre {
-    font-size: var(--fs-titre);
-  }
-  .entree__suite {
-    font-size: var(--fs-sous-titre);
-    color: var(--champan);
-    margin-top: calc(var(--sp-2) * -1);
-    animation: apparition var(--dur-revelation) var(--ease-sortie) 1.4s both;
-  }
-  @keyframes apparition {
-    from { opacity: 0; transform: translateY(0.4rem); }
-  }
-  .entree__clarte {
-    font-size: var(--fs-lead);
-    line-height: 1.5;
-    color: rgb(241 233 220 / 0.9);
-    max-width: 34rem;
-  }
-  .entree__faits {
-    color: var(--marfil);
-    line-height: 1.8;
-  }
-  .entree__billet {
-    display: grid;
-    gap: var(--sp-4);
-    justify-items: start;
-    margin-top: var(--sp-4);
-  }
-  .entree__passer {
-    color: var(--marfil);
-  }
-  .entree__retour {
-    color: var(--champan);
-  }
-
-  @media (min-width: 56rem) {
-    .entree {
-      padding-left: calc(var(--gouttiere) + 4vw);
-      padding-bottom: var(--sp-8);
-    }
-    .entree__billet {
-      grid-template-columns: auto auto;
-      align-items: end;
-      gap: var(--sp-6);
-    }
-  }
-
-  .question-fondatrice {
-    min-height: 200svh;
-    display: grid;
-    place-items: start center;
-    padding: 40svh var(--gouttiere) 60svh;
-    text-align: center;
-  }
-  .question-fondatrice__texte {
+  .texte {
     position: sticky;
-    top: 38svh;
-    font-size: var(--fs-question);
-    max-width: 16ch;
-    text-shadow: 0 0 2.5rem rgb(8 7 10 / 0.9);
+    top: 30svh;
+    max-width: 24rem;
+    display: grid;
+    gap: var(--sp-4);
+    padding-block: var(--sp-6);
+    text-shadow: 0 1px 12px rgb(6 5 5 / 0.7);
   }
-  .question-fondatrice__texte em {
+  @media (orientation: portrait) {
+    .texte {
+      top: calc(env(safe-area-inset-top) + 5.5rem);
+      max-width: 30rem;
+    }
+  }
+  @media (min-width: 64rem) {
+    .moment {
+      padding-left: calc(var(--gouttiere) + 4vw);
+    }
+  }
+
+  /* Apparition lente du texte (le texte existe dès le départ, sans JavaScript). */
+  :global(html.js) .texte,
+  :global(html.js) .question {
+    opacity: 0;
+    transform: translateY(0.5rem);
+    transition:
+      opacity 1600ms var(--ease-fondu),
+      transform 1600ms var(--ease-sortie);
+  }
+  :global(html.js) .est-actif .texte,
+  :global(html.js) .est-actif .question {
+    opacity: 1;
+    transform: none;
+  }
+
+  .etiquette,
+  .compte {
+    font-family: var(--font-generique);
+    font-size: var(--fs-label);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
     color: var(--champan);
+  }
+  .compte {
+    color: rgb(241 233 220 / 0.55);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* 1. Arrivée */
+  .moment--arrivee {
+    min-height: 100svh;
+  }
+  .texte--arrivee {
+    top: 0;
+    min-height: 100svh;
+    align-content: center;
+    max-width: 30rem;
+    gap: var(--sp-5);
+  }
+  @media (orientation: portrait) {
+    .texte--arrivee {
+      align-content: start;
+      padding-top: calc(env(safe-area-inset-top) + 6.5rem);
+    }
+  }
+  .arrivee__titre {
+    font-size: clamp(2rem, 5.4vw, 3.6rem);
+    line-height: 1.08;
+  }
+  .arrivee__sous {
+    font-size: var(--fs-lead);
+    font-style: italic;
+    color: rgb(241 233 220 / 0.82);
+  }
+  .texte--arrivee .appel {
+    justify-self: start;
+    margin-top: var(--sp-3);
+  }
+
+  /* 2. La question */
+  .moment--question {
+    min-height: 170svh;
+    padding-top: 40svh;
+  }
+  .question {
+    position: sticky;
+    top: 34svh;
+    max-width: 13ch;
+    font-size: clamp(2.1rem, 5.6vw, 4.2rem);
+    line-height: 1.08;
+    text-shadow: 0 1px 12px rgb(6 5 5 / 0.7);
+  }
+  @media (orientation: portrait) {
+    .question {
+      top: 16svh;
+    }
+  }
+  .silence {
+    height: 60svh;
+  }
+
+  /* 3 et 5. Étapes */
+  .etape__titre {
+    font-family: var(--font-lettre);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(1.625rem, 3.6vw, 2.25rem);
+    line-height: 1.15;
+  }
+  .etape__texte {
+    font-size: var(--fs-lead);
+    line-height: 1.55;
+    color: rgb(241 233 220 / 0.86);
+  }
+  .moment--etape,
+  .moment--soiree {
+    min-height: 115svh;
+  }
+
+  /* 4. La place vide */
+  .moment--place {
+    min-height: 170svh;
+  }
+  .texte--place {
+    max-width: 22rem;
+  }
+  .place {
+    font-size: clamp(1.9rem, 4.6vw, 3.2rem);
+    line-height: 1.12;
+  }
+
+  /* 7. Fin */
+  .moment--fin {
+    min-height: 150svh;
+  }
+  .texte--fin {
+    max-width: 28rem;
+    gap: var(--sp-5);
+  }
+  @media (orientation: portrait) {
+    .texte--fin {
+      gap: var(--sp-3);
+      padding-block: var(--sp-4);
+    }
+  }
+  .fin__titre {
+    font-size: clamp(1.9rem, 4.8vw, 3.3rem);
+    line-height: 1.1;
+  }
+  .fin__annonce {
+    font-size: var(--fs-lead);
+    font-style: italic;
+  }
+  .texte--fin .appel {
+    justify-self: start;
+  }
+  .fin__note {
+    max-width: 22rem;
+    font-size: var(--fs-petit);
+    color: rgb(241 233 220 / 0.7);
+  }
+
+  .pied {
+    position: relative;
+    z-index: 2;
+    background: #060505;
+    color: rgb(241 233 220 / 0.75);
+    padding: var(--sp-8) var(--gouttiere) calc(var(--sp-8) + env(safe-area-inset-bottom));
+    font-family: var(--font-generique);
+    font-size: var(--fs-label);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    display: grid;
+    gap: var(--sp-2);
+  }
+  .pied__doux {
+    color: rgb(241 233 220 / 0.45);
+  }
+  :global(html.capture) .recit,
+  :global(html.capture) .pied {
+    visibility: hidden;
   }
 </style>
 
 <script>
-  import '../scripts/sala/realisateur';
+  import '../scripts/accueil/realisateur';
 </script>

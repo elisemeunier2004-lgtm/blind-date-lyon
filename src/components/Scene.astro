@@ -1,0 +1,103 @@
+---
+/**
+ * La table, fixe derrière le récit.
+ * 1. Une photographie de la scène (calculée à l'avance) s'affiche immédiatement :
+ *    c'est aussi l'expérience complète sans 3D (réduction des animations, appareil modeste).
+ * 2. La 3D en direct prend le relais quand elle est prête, par un fondu lent.
+ */
+---
+
+<div class="scene" data-scene aria-hidden="true">
+  <picture class="scene__affiche est-visible" data-affiche>
+    <source media="(orientation: portrait)" srcset="/scene/arrivee-v.jpg" />
+    <img src="/scene/arrivee-p.jpg" alt="" fetchpriority="high" decoding="async" />
+  </picture>
+  <img class="scene__affiche" data-affiche-suivante alt="" decoding="async" />
+  <canvas class="scene__toile" data-toile></canvas>
+  <div class="scene__tirage"></div>
+</div>
+
+<style>
+  .scene {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background: #060505;
+    overflow: hidden;
+  }
+  .scene__affiche,
+  .scene__affiche img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .scene__affiche {
+    opacity: 0;
+    transition: opacity 1400ms var(--ease-fondu);
+  }
+  .scene__affiche.est-visible {
+    opacity: 1;
+  }
+  /* Arrivée : la photographie sort lentement de l'obscurité. */
+  .scene__affiche[data-affiche].est-visible {
+    animation: sortir-du-noir 2600ms var(--ease-fondu) both;
+  }
+  @keyframes sortir-du-noir {
+    from {
+      opacity: 0;
+    }
+  }
+  .scene__toile {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1800ms var(--ease-fondu);
+  }
+  .scene.est-3d .scene__toile {
+    opacity: 1;
+  }
+  /* Comme au tirage : le bord de l'image où vit le texte est légèrement assombri.
+     À gauche en paysage, en haut en portrait. */
+  .scene__tirage {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(90deg, rgb(6 5 5 / 0.72) 0%, rgb(6 5 5 / 0.38) 30%, transparent 52%);
+  }
+  @media (orientation: portrait) {
+    .scene__tirage {
+      background: linear-gradient(180deg, rgb(6 5 5 / 0.78) 0%, rgb(6 5 5 / 0.4) 32%, transparent 55%);
+    }
+  }
+  /* Plans rapprochés sur la nappe : le fond est clair, le tirage se fait plus appuyé. */
+  .scene__tirage {
+    transition: opacity 1400ms var(--ease-fondu);
+  }
+  .scene__tirage::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 1400ms var(--ease-fondu);
+    background: linear-gradient(90deg, rgb(6 5 5 / 0.62) 0%, rgb(6 5 5 / 0.34) 34%, transparent 58%);
+  }
+  @media (orientation: portrait) {
+    .scene__tirage::after {
+      background: linear-gradient(180deg, rgb(6 5 5 / 0.7) 0%, rgb(6 5 5 / 0.45) 30%, transparent 50%);
+    }
+  }
+  :global(html[data-plan='enveloppe']) .scene__tirage::after,
+  :global(html[data-plan='cachet']) .scene__tirage::after,
+  :global(html[data-plan='cle']) .scene__tirage::after,
+  :global(html[data-plan='apres']) .scene__tirage::after,
+  :global(html[data-plan='verres']) .scene__tirage::after {
+    opacity: 1;
+  }
+  :global(html.capture) .scene__tirage {
+    display: none;
+  }
+</style>

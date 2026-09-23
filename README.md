@@ -1,11 +1,12 @@
-# LA CITA — LA SALA (V1)
+# LA SALA — homepage V2 (« Una mesa para dos »)
 
-Site de la marque (nom de travail : **LA CITA**). Première destination : Lyon.
+Site de LA SALA : dîners à l'aveugle. Première destination : Lyon.
 
 > Sources de vérité, à lire avant toute modification :
 > 1. `design-system/marque/FONDATION-PHILOSOPHIQUE.md` : philosophie, langage, principes de décision
 > 2. `design-system/marque/VISUAL-WORLD-BIBLE-V2.md` : direction artistique
-> 3. `design-system/marque/CONCEPTS-HOMEPAGE.md` : historique des concepts (LA SALA est retenu)
+> 3. `design-system/marque/AUDIT-V1-PROPOSITION-V2.md` : audit de la V1 et direction V2 (la table, le dîner)
+> 4. `/scene-reference` : scène 3D de référence validée (lumière, matières, composition). **Ne plus la modifier.**
 
 ## Voir le site en local
 
@@ -61,44 +62,46 @@ Le fichier `.mcp.json` déclare le serveur MCP officiel de 21st.dev (`https://21
 
 Le texte des chapitres de la nuit (heures, phrases, explications concrètes) se trouve dans `src/config/nuit.ts`.
 
-## Architecture
+## Architecture (V2)
 
 ```
 src/
   config/
-    site.ts            ← informations commerciales (seul fichier à modifier)
-    nuit.ts            ← les chapitres de la nuit (20:47 → 02:13)
-  lib/format.ts        ← dates, prix, lien de réservation
-  styles/
-    tokens.css         ← tokens de la bible V2 (palette, typographies, mouvement)
-    global.css
+    site.ts            ← informations commerciales et clarté (seul fichier à modifier)
+    recit.ts           ← le récit : étapes et soirée (un plan de la table + une phrase)
+    sons.ts            ← identité sonore : manifeste des sons (tous à null pour l'instant)
+  lib/format.ts        ← dates, prix, liens
+  styles/              ← tokens de la bible V2, styles globaux
   layouts/Base.astro
   components/
-    Salle.astro        ← la salle : affiche CSS/SVG + toile 3D
-    Billet.astro       ← le billet à déchirer (premier geste)
-    Chapitre.astro     ← une heure de la nuit (poésie + « Concrètement »)
-    Seances.astro      ← dates, lieux, prix, réservation (ambiance papier)
-    Engagement.astro   ← ce qui reste secret / ce qui ne l'est jamais
-    Questions.astro    ← questions fréquentes
-    Cartas.astro       ← les épisodes vidéo à venir
-    Fin.astro          ← la fin et le pied de page
-    Entete.astro, BarreBasse.astro, CarteDeBal.astro
-  scripts/sala/
-    realisateur.ts     ← observe la scène à l'écran et règle la salle
-    etat.ts            ← l'état de la salle, lu depuis les data-* des sections
-    billet.ts          ← déchirer le billet (clic, clavier, glisser)
-    capacites.ts       ← décide si la 3D est proposée
-    salle3d.ts         ← la salle en three.js (chargée en différé)
+    Scene.astro        ← la table fixe : photographie immédiate + 3D en relais
+    Entete.astro       ← marque + « Être informé de l'ouverture »
+    Clarte.astro       ← ce qu'il faut savoir (emplacements prix/dates/durée/lieu/conditions)
+  pages/
+    index.astro        ← la homepage : arrivée, question, étapes, place vide, soirée, clarté, fin
+    scene-reference.astro ← scène de référence validée (ne plus modifier)
+  scripts/
+    capacites.ts       ← décide si la 3D en direct est proposée
+    table/             ← objets, textures et scène de référence (partagés)
+    accueil/
+      decor.ts         ← la table de la homepage et ses plans de caméra
+      realisateur.ts   ← suit le moment à l'écran et règle la table (3D ou photographies ;
+                         retour automatique aux photographies sous ~20 images/s)
+      son.ts           ← moteur audio (inactif tant qu'aucun fichier n'existe)
+public/scene/          ← photographies de la scène, une par plan (-p paysage, -v portrait)
 ```
 
-### La 3D, une couche optionnelle
-- **L'affiche CSS/SVG** s'affiche toujours en premier. C'est l'expérience complète sans 3D.
-- **La 3D** (three.js) se charge après le rendu, pendant un moment d'inactivité, dans un fichier séparé (environ 140 Ko compressés). Elle n'est **pas** chargée si l'utilisateur demande à réduire les animations, en mode économie de données, sur un appareil modeste ou sans WebGL 2.
-- Forçage pour les tests : `?3d=1` ou `?3d=0`. Avec `?3d=1&debug`, la console expose `__sala.scene('place')` pour sauter directement à une scène (réglage des cadrages).
-- Le rendu se met en pause quand la salle n'est pas visible (sections papier) et quand l'onglet est caché.
+### La table : photographie d'abord, 3D ensuite
+- Chaque plan existe en **photographie calculée à l'avance** (`public/scene/`). Elle s'affiche immédiatement et reste l'expérience complète si la 3D n'est pas proposée : réduction des animations demandée, économie de données, appareil modeste, WebGL absent.
+- La **3D en direct** (three.js) se charge ensuite, dans le même cadre, et prend le relais par un fondu. Sur mobile, elle tourne en mode léger (sans profondeur de champ ni halo, ombres réduites).
+- **Régénérer les photographies** après un changement de la scène : lancer `npm run build && npm run preview`, puis ouvrir `/?capture=<plan>` ; la console expose `__plan(plan, bougie, jour)` pour passer d'un plan à l'autre et capturer l'écran (1440×900 en paysage, 390×844 @2x en portrait).
+- Forçage pour les tests : `?3d=1` ou `?3d=0`.
 
-### Le scroll
-Le scroll reste **natif**. Chaque section porte des attributs `data-scene`, `data-rideau`, `data-regard`, etc. Le réalisateur lit l'état de la section qui traverse le milieu de l'écran et l'applique à la salle.
+### Clarté : les emplacements existent déjà
+`site.informations` (prix, dates, durée, lieu, conditions) : tant qu'une valeur vaut `null`, son emplacement est **masqué** publiquement. `?structure` les affiche pour travailler.
+
+### Son
+`src/config/sons.ts` liste musique, ambiance de salle et bruits d'objets. Tant qu'aucun fichier n'est renseigné, rien n'est chargé et aucun bouton n'apparaît. Déposer les fichiers dans `public/sons/` et renseigner leur chemin.
 
 ## Règle de décision du projet
 

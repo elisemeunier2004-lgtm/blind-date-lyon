@@ -147,82 +147,33 @@ button {
   padding-inline: var(--gouttiere);
 }
 
-/* — Boutons — */
+/* — Appel à l'action : un filet, du texte. Pas de bouton flottant, pas de halo. — */
 
-.bouton {
+.appel {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: var(--sp-3);
-  min-height: 3.25rem;
-  padding: 0 var(--sp-6);
-  background: var(--action);
-  color: var(--sur-action);
+  gap: var(--sp-4);
+  min-height: 3rem;
+  padding: 0 var(--sp-5);
+  border: 1px solid rgb(216 195 155 / 0.55);
+  color: var(--marfil);
   font-family: var(--font-generique);
-  font-size: 0.8125rem;
-  font-weight: 500;
-  letter-spacing: 0.18em;
+  font-size: 0.75rem;
+  font-weight: 450;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   text-decoration: none;
-  border: 1px solid var(--action);
   transition:
-    background-color var(--dur-micro) var(--ease-sortie),
-    color var(--dur-micro) var(--ease-sortie),
-    box-shadow 600ms var(--ease-sortie);
+    background-color 500ms var(--ease-sortie),
+    border-color 500ms var(--ease-sortie),
+    color 500ms var(--ease-sortie);
 }
-.bouton:hover {
-  box-shadow: 0 0 2.5rem -0.5rem rgb(216 195 155 / 0.55);
+.appel:hover {
+  background: var(--marfil);
+  border-color: var(--marfil);
+  color: var(--noche);
 }
-.papier .bouton:hover {
-  box-shadow: none;
-  background: var(--burdeos);
-  border-color: var(--burdeos);
-}
-
-.bouton--filet {
-  background: transparent;
-  color: var(--texte);
-  border-color: currentColor;
-}
-.bouton--filet:hover {
-  background: var(--texte);
-  color: var(--fond);
-  box-shadow: none;
-}
-
-.lien-trace {
-  font-family: var(--font-generique);
-  font-size: 0.8125rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  text-decoration: none;
-  background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px no-repeat;
-  padding-block: var(--sp-2);
-  transition: background-size 500ms var(--ease-sortie);
-}
-.lien-trace:hover {
-  background-size: 0% 1px;
-  background-position: 100% 100%;
-}
-
-/* — Grain 35 mm — */
-
-.grain {
-  position: fixed;
-  inset: -50%;
-  z-index: 60;
+.appel--inactif {
+  opacity: 0.55;
   pointer-events: none;
-  opacity: 0.07;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  animation: grain 1s steps(8) infinite;
-}
-@keyframes grain {
-  0% { transform: translate(0, 0); }
-  25% { transform: translate(-3%, 2%); }
-  50% { transform: translate(2%, -3%); }
-  75% { transform: translate(-2%, -1%); }
-  100% { transform: translate(1%, 3%); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .grain { animation: none; }
 }

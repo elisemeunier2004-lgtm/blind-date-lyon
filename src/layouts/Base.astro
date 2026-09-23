@@ -15,7 +15,7 @@ const { titre, description } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="fr" data-scene="entree">
+<html lang="fr" data-ambiance="nuit">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -27,10 +27,10 @@ const { titre, description } = Astro.props;
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="fr_FR" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <slot name="tete" />
   </head>
   <body>
     <a class="lien-evitement" href="#contenu">Aller au contenu</a>
     <slot />
-    <div class="grain" aria-hidden="true"></div>
   </body>
 </html>

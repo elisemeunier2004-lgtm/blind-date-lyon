@@ -40,8 +40,9 @@ export type Episode = {
   videoUrl: string | null;
 };
 
+export type Question = { question: string; reponse: string };
+
 type Site = {
-  /** Nom de travail : le nom définitif n'est pas encore choisi. */
   marque: string;
   destination: { ville: string; mention: string; prochaines: string };
   ouverture: {
@@ -77,14 +78,30 @@ type Site = {
     /** Adresse de contact officielle. `null` = aucune adresse affichée. */
     email: string | null;
   };
+  /**
+   * Informations pratiques. `null` = non définitif : rien n'est affiché publiquement
+   * (l'emplacement existe dans la page, masqué ; visible avec ?structure pour travailler).
+   */
+  informations: {
+    prix: string | null;
+    dates: string | null;
+    duree: string | null;
+    lieu: string | null;
+    conditions: string | null;
+  };
   /** Séances ouvertes ou annoncées. Vide tant qu'aucune date n'est officielle. */
   seances: Seance[];
+  /** Principes de sécurité (engagements de la marque, pas des promesses opérationnelles). */
   securite: string[];
+  /** Principes de confidentialité. */
+  confidentialite: string[];
+  /** Questions fréquentes : seules celles dont la réponse est sûre sont publiées. */
+  questions: Question[];
   episodes: Episode[];
 };
 
 export const site: Site = {
-  marque: 'LA CITA',
+  marque: 'LA SALA',
 
   destination: {
     ville: 'Lyon',
@@ -122,6 +139,14 @@ export const site: Site = {
     email: null,
   },
 
+  informations: {
+    prix: null,
+    dates: null,
+    duree: null,
+    lieu: null,
+    conditions: null,
+  },
+
   seances: [],
 
   securite: [
@@ -129,6 +154,31 @@ export const site: Site = {
     'Une charte de respect acceptée par tout le monde.',
     'Vous pouvez partir à tout moment, sans avoir à vous justifier.',
     'Vos coordonnées ne sont jamais transmises sans votre accord mutuel.',
+  ],
+
+  confidentialite: [
+    'Aucune photo ne vous est demandée, aucune photo n’est montrée.',
+    'Votre nom et vos coordonnées ne sont transmis à personne sans accord mutuel.',
+    'Vos réponses servent uniquement à composer la rencontre.',
+  ],
+
+  questions: [
+    {
+      question: 'Est-ce que je vois la personne avant le dîner ?',
+      reponse: 'Non. Ni photo, ni profil. Vous recevez seulement quelques éléments utiles avant la soirée.',
+    },
+    {
+      question: 'Qui compose les rencontres ?',
+      reponse: 'Nous, à partir de vos réponses : vos intentions, ce qui compte pour vous. Jamais à partir de l’apparence.',
+    },
+    {
+      question: 'Et si je ne souhaite pas revoir la personne ?',
+      reponse: 'Personne ne le saura. Chacun répond en privé ; nous ne mettons en relation que si la réponse est oui des deux côtés.',
+    },
+    {
+      question: 'Puis-je partir quand je veux ?',
+      reponse: 'Oui, à tout moment, sans avoir à vous justifier.',
+    },
   ],
 
   episodes: [

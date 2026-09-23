@@ -1,0 +1,188 @@
+---
+import { site } from '../config/site';
+
+/**
+ * Ce qu'il faut savoir. La poésie ne cache jamais les informations importantes :
+ * chaque emplacement (prix, dates, durée, lieu, conditions) existe déjà dans la page.
+ * Tant qu'une valeur vaut `null`, son emplacement est masqué (visible avec ?structure).
+ */
+const libelles = {
+  prix: 'Prix',
+  dates: 'Dates',
+  duree: 'Durée',
+  lieu: 'Lieu',
+  conditions: 'Conditions',
+} as const;
+const infos = Object.entries(site.informations) as [keyof typeof libelles, string | null][];
+const rienDePublie = infos.every(([, v]) => v === null);
+---
+
+<section id="savoir" class="clarte" aria-labelledby="savoir-titre" data-plan="papier">
+  <div class="clarte__cadre">
+    <p class="clarte__sur">Ce qu’il faut savoir</p>
+    <h2 id="savoir-titre" class="clarte__titre">La soirée garde son mystère. Les informations, jamais.</h2>
+
+    <dl class="clarte__infos">
+      {
+        infos.map(([cle, valeur]) => (
+          <div class="clarte__info" hidden={valeur === null} data-structure={valeur === null ? cle : undefined}>
+            <dt>{libelles[cle]}</dt>
+            <dd>{valeur ?? 'À définir'}</dd>
+          </div>
+        ))
+      }
+    </dl>
+    {
+      rienDePublie && (
+        <p class="clarte__attente">
+          Prix, dates, durée, lieu et conditions seront publiés ici, avant l’ouverture des inscriptions.
+        </p>
+      )
+    }
+
+    <div class="clarte__colonnes">
+      <div>
+        <h3>Sécurité</h3>
+        <ul>
+          {site.securite.map((l) => <li>{l}</li>)}
+          <li>Réservé aux personnes de {site.offre.ageMinimum} ans et plus.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Confidentialité</h3>
+        <ul>
+          {site.confidentialite.map((l) => <li>{l}</li>)}
+        </ul>
+      </div>
+    </div>
+
+    <div class="clarte__questions">
+      <h3>Questions</h3>
+      {
+        site.questions.map(({ question, reponse }) => (
+          <details>
+            <summary>{question}</summary>
+            <p>{reponse}</p>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .clarte {
+    position: relative;
+    z-index: 2;
+    background: var(--marfil);
+    color: var(--noche);
+    padding: calc(var(--sp-10) + var(--sp-5)) var(--gouttiere) var(--sp-10);
+  }
+  .clarte__cadre {
+    max-width: 46rem;
+    margin-inline: auto;
+    display: grid;
+    gap: var(--sp-7);
+  }
+  .clarte__sur {
+    font-family: var(--font-generique);
+    font-size: var(--fs-label);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--burdeos);
+    margin-bottom: calc(var(--sp-6) * -1);
+  }
+  .clarte__titre {
+    font-family: var(--font-lettre);
+    font-weight: 400;
+    font-size: clamp(1.625rem, 4.2vw, 2.5rem);
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+  .clarte__infos {
+    display: grid;
+    gap: var(--sp-3);
+  }
+  .clarte__info {
+    display: grid;
+    grid-template-columns: 8rem 1fr;
+    gap: var(--sp-4);
+    padding-bottom: var(--sp-3);
+    border-bottom: 1px solid rgb(8 7 10 / 0.14);
+  }
+  .clarte__info[hidden] {
+    display: none;
+  }
+  .clarte__info dt {
+    font-family: var(--font-generique);
+    font-size: var(--fs-label);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--sepia);
+    padding-top: 0.2em;
+  }
+  .clarte__info dd {
+    margin: 0;
+  }
+  /* Mode de travail (?structure) : les emplacements vides deviennent visibles. */
+  :global(html.structure) .clarte__info[data-structure] {
+    display: grid !important;
+    outline: 1px dashed rgb(91 17 30 / 0.5);
+    outline-offset: 4px;
+    color: var(--sepia);
+  }
+  .clarte__attente {
+    color: var(--sepia);
+    font-style: italic;
+    margin-top: calc(var(--sp-5) * -1);
+  }
+  .clarte__colonnes {
+    display: grid;
+    gap: var(--sp-6);
+  }
+  @media (min-width: 48rem) {
+    .clarte__colonnes {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--sp-8);
+    }
+  }
+  h3 {
+    font-family: var(--font-generique);
+    font-size: var(--fs-label);
+    font-weight: 450;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--burdeos);
+    margin: 0 0 var(--sp-4);
+  }
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--sp-3);
+  }
+  .clarte__questions details {
+    border-top: 1px solid rgb(8 7 10 / 0.14);
+  }
+  .clarte__questions details:last-child {
+    border-bottom: 1px solid rgb(8 7 10 / 0.14);
+  }
+  .clarte__questions summary {
+    cursor: pointer;
+    list-style: none;
+    padding-block: var(--sp-4);
+    min-height: 3rem;
+  }
+  .clarte__questions summary::-webkit-details-marker {
+    display: none;
+  }
+  .clarte__questions details[open] summary {
+    font-style: italic;
+  }
+  .clarte__questions details p {
+    padding-bottom: var(--sp-5);
+    color: var(--sepia);
+    max-width: 38rem;
+  }
+</style>
