@@ -115,6 +115,10 @@ const lien = site.ouverture.lienInformation;
     <p class="pied__doux">{site.destination.prochaines}</p>
     {site.contact.email && <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>}
   </footer>
+
+  <script>
+    import '../scripts/accueil/realisateur';
+  </script>
 </Base>
 
 <style>
@@ -315,7 +319,3 @@ const lien = site.ouverture.lienInformation;
     visibility: hidden;
   }
 </style>
-
-<script>
-  import '../scripts/accueil/realisateur';
-</script>
